@@ -2,9 +2,10 @@ package mainApp;
 
 import java.sql.Driver;
 
+
 public class App {
 	public static void main(String[] args) {
-		// Driver server = new com.microsof
+		Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		LoginMenu loginMenu = new LoginMenu();
 	}
 }
