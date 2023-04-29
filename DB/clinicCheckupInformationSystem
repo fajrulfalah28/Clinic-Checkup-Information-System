@@ -45,9 +45,9 @@ cityAddress varchar(15) not null check(cityAddress not like '%[^a-zA-Z]%'),
 streetAddress varchar(15) not null,
 zipCode int not null,
 email varchar(50) not null,
-contactName1 varchar(15) not null check(firstName not like '%[^a-zA-Z]%'),
+contactName1 varchar(15) not null check(contactName1 not like '%[^a-zA-Z]%'),
 phoneNumber1 bigInt not null,
-contactName2 varchar(15) not null check(firstName not like '%[^a-zA-Z]%'),
+contactName2 varchar(15) not null check(contactName2 not like '%[^a-zA-Z]%'),
 phoneNumber2 bigInt not null
 )
 
@@ -62,9 +62,9 @@ cityAddress varchar(15) not null check(cityAddress not like '%[^a-zA-Z]%'),
 streetAddress varchar(15) not null,
 zipCode int not null,
 email varchar(50) not null,
-contactName1 varchar(15) not null check(firstName not like '%[^a-zA-Z]%'),
+contactName1 varchar(15) not null check(contactName1 not like '%[^a-zA-Z]%'),
 phoneNumber1 bigInt not null,
-contactName2 varchar(15) not null check(firstName not like '%[^a-zA-Z]%'),
+contactName2 varchar(15) not null check(contactName2 not like '%[^a-zA-Z]%'),
 phoneNumber2 bigInt not null
 )
 
@@ -90,14 +90,13 @@ patientID int constraint FKpatientID foreign key(patientID) references person.pa
 employeeID int constraint FKemployeeID foreign key(employeeID) references person.employee(employeeID) not null,
 appointmentStatus varchar(10) not null,
 appointmentDate dateTime not null
-
 )
 
 create table clinic.medicalRecord
 (
-MRID int constraint PKappointmentID primary key identity(1,1) not null,
-patientID int constraint FKpatientID foreign key(patientID) references person.patient(patientID) not null,
-employeeID int constraint FKemployeeID foreign key(employeeID) references person.employee(employeeID) not null,
+MRID int constraint PKMRID primary key identity(1,1) not null,
+patientID int constraint FKpatientID_MR foreign key(patientID) references person.patient(patientID) not null,
+employeeID int constraint FKemployeeID_MR foreign key(employeeID) references person.employee(employeeID) not null,
 systolic int not null,
 diastolic int not null,
 heartRate int not null,
@@ -110,8 +109,8 @@ recordTime dateTime not null
 create table clinic.diagnosis
 (
 diagnosisID int constraint PKdiagnosisID primary key identity(1,1) not null,
-patientID int constraint FKpatientID foreign key(patientID) references person.patient(patientID) not null,
-employeeID int constraint FKemployeeID foreign key(employeeID) references person.employee(employeeID) not null,
+patientID int constraint FKpatientID_D foreign key(patientID) references person.patient(patientID) not null,
+employeeID int constraint FKemployeeID_D foreign key(employeeID) references person.employee(employeeID) not null,
 diagnosisResult varchar (100),
 actionStatus varchar(20)
 )
@@ -119,8 +118,8 @@ actionStatus varchar(20)
 create table clinic.prescription
 (
 prescriptionID int constraint PKprescriptionID primary key identity(1,1) not null,
-patientID int constraint FKpatientID foreign key(patientID) references person.patient(patientID) not null,
-employeeID int constraint FKemployeeID foreign key(employeeID) references person.employee(employeeID) not null,
+patientID int constraint FKpatientID_P foreign key(patientID) references person.patient(patientID) not null,
+employeeID int constraint FKemployeeID_Pr foreign key(employeeID) references person.employee(employeeID) not null,
 medicineName varchar(20) not null,
 medicineQTY int not null,
 medicationDosage varchar(40) not null,
