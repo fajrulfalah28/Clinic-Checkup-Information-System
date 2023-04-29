@@ -1,0 +1,158 @@
+--CREATE DATABASE
+use master
+create database clinic
+on
+(
+name = clinic_data,
+filename = 'C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\clinic.mdf',
+size = 10MB,
+maxsize = 100MB,
+filegrowth = 5MB
+)
+log on
+(
+name = clinic_log,
+filename = 'C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\clinic.ldf',
+size = 10MB,
+maxsize = 100MB,
+filegrowth = 5MB
+)
+go
+
+
+
+
+
+--CREATE SCHEMA
+use clinic go
+create schema person go
+create schema clinic go
+
+
+
+
+
+--CREATE TABLE
+use clinic go
+create table person.patient
+(
+patientID int constraint PKpatientID primary key identity(1,1) not null,
+firstName varchar(15) not null check(firstName not like '%[^a-zA-Z]%'),
+lastName varchar(15) check(lastName not like '%[^a-zA-Z]%') default '',
+dateofBirth date not null check(dateofBirth <= getdate()),
+gender varchar(1) not null check(gender in ('M','F')),
+cityAddress varchar(15) not null check(cityAddress not like '%[^a-zA-Z]%'),
+streetAddress varchar(15) not null,
+zipCode int not null,
+email varchar(50) not null,
+contactName1 varchar(15) not null check(firstName not like '%[^a-zA-Z]%'),
+phoneNumber1 bigInt not null,
+contactName2 varchar(15) not null check(firstName not like '%[^a-zA-Z]%'),
+phoneNumber2 bigInt not null
+)
+
+create table person.employee
+(
+employeeID int constraint PKemployeeID primary key identity(1,1) not null,
+firstName varchar(15) not null check(firstName not like '%[^a-zA-Z]%'),
+lastName varchar(15) check(lastName not like '%[^a-zA-Z]%') default '',
+dateofBirth date not null check(dateofBirth <= getdate()),
+gender varchar(1) not null check(gender in ('M','F')),
+cityAddress varchar(15) not null check(cityAddress not like '%[^a-zA-Z]%'),
+streetAddress varchar(15) not null,
+zipCode int not null,
+email varchar(50) not null,
+contactName1 varchar(15) not null check(firstName not like '%[^a-zA-Z]%'),
+phoneNumber1 bigInt not null,
+contactName2 varchar(15) not null check(firstName not like '%[^a-zA-Z]%'),
+phoneNumber2 bigInt not null
+)
+
+create table person.schedule 
+(
+scheduleID int constraint PKscheduleID primary Key identity(1,1) not null,
+employeeID int constraint FKemployeeID foreign key(employeeID) references person.employee(employeeID) not null,
+DayN varchar(9) not null,
+startHour time not null,
+endHour time not null
+)
+
+create table person.jobID
+(
+jobID int constraint PKjobID primary key identity(1,1) not null,
+jobPosition varchar(15) not null check(jobPosition not like '%[^a-zA-Z]%')
+)
+
+create table clinic.appointment
+(
+appointmentID int constraint PKappointmentID primary key identity(1,1) not null,
+patientID int constraint FKpatientID foreign key(patientID) references person.patient(patientID) not null,
+employeeID int constraint FKemployeeID foreign key(employeeID) references person.employee(employeeID) not null,
+appointmentStatus varchar(10) not null,
+appointmentDate dateTime not null
+
+)
+
+create table clinic.medicalRecord
+(
+MRID int constraint PKappointmentID primary key identity(1,1) not null,
+patientID int constraint FKpatientID foreign key(patientID) references person.patient(patientID) not null,
+employeeID int constraint FKemployeeID foreign key(employeeID) references person.employee(employeeID) not null,
+systolic int not null,
+diastolic int not null,
+heartRate int not null,
+bodyTemperature int not null,
+bodyheight int not null,
+bodyWeight int not null,
+recordTime dateTime not null
+)
+
+create table clinic.diagnosis
+(
+diagnosisID int constraint PKdiagnosisID primary key identity(1,1) not null,
+patientID int constraint FKpatientID foreign key(patientID) references person.patient(patientID) not null,
+employeeID int constraint FKemployeeID foreign key(employeeID) references person.employee(employeeID) not null,
+diagnosisResult varchar (100),
+actionStatus varchar(20)
+)
+
+create table clinic.prescription
+(
+prescriptionID int constraint PKprescriptionID primary key identity(1,1) not null,
+patientID int constraint FKpatientID foreign key(patientID) references person.patient(patientID) not null,
+employeeID int constraint FKemployeeID foreign key(employeeID) references person.employee(employeeID) not null,
+medicineName varchar(20) not null,
+medicineQTY int not null,
+medicationDosage varchar(40) not null,
+)
+
+create table clinic.payment
+(
+paymentID int constraint PKpaymentID primary key identity(1,1) not null,
+appointmentID int constraint FKappointmentID foreign key(appointmentID) references clinic.appointment(appointmentID) not null,
+paymentMethod varchar(10) not null,
+chargedAmmount int not null,
+paymentStatus varchar(10),
+paymentTime dateTime
+)
+
+create table clinic.referral
+(
+referralID int constraint PKreferralID primary key identity(1,1) not null,
+diagnosisID int constraint FKdiagnosisID foreign key(diagnosisID) references clinic.diagnosis(diagnosisID) not null,
+hospitalName varchar(20) not null,
+medicalSpecialties varchar(20) not null,
+referralTime dateTime not null
+)
+
+
+
+
+
+--CREATE PROCEDURE
+
+
+
+
+
+--CREATE TRIGGER
