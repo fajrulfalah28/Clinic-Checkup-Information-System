@@ -1,94 +1,158 @@
-
 package mainApp;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import javax.swing.*;
 
 
 public class LoginMenu extends javax.swing.JFrame {
 
     public LoginMenu() {
-        
-    JPanel mainPanel = new JPanel();
-    mainPanel.setBackground(new Color(235, 216, 200));
 
-    Dimension topPanelDimension = new Dimension(800, 50);
-    JPanel topPanel = new JPanel();
-    topPanel.setPreferredSize(topPanelDimension);
-    topPanel.setBackground(new Color(19, 117, 118));
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(new Color(235, 216, 200));
 
-    JLabel titleLabel = new JLabel("Clinic Checkup Management System");
-    titleLabel.setFont(new Font("Poppins", Font.BOLD, 48));
-    titleLabel.setHorizontalAlignment(JLabel.CENTER);
-    titleLabel.setVerticalAlignment(JLabel.CENTER);
+        Dimension topPanelDimension = new Dimension(800, 50);
+        JPanel topPanel = new JPanel();
+        topPanel.setPreferredSize(topPanelDimension);
+        topPanel.setBackground(new Color(19, 117, 118));
 
-    JLabel usernameLabel = new JLabel("Username:");
-    JTextField usernameField = new JTextField(24);
+        Dimension titlePanelDimension = new Dimension(800, 100);
+        JPanel titlePanel = new JPanel();
+        titlePanel.setPreferredSize(titlePanelDimension);
+        mainPanel.setBackground(new Color(235, 216, 200));
 
-    JLabel passwordLabel = new JLabel("Password:");
-    JTextField passwordField = new JTextField(12);
+        JLabel titleLabel = new JLabel("Clinic Checkup Management System");
+        titleLabel.setFont(new Font("Poppins", Font.BOLD, 68));
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+        titleLabel.setVerticalAlignment(JLabel.CENTER);
 
-    JButton signIn = new JButton("Sign In");
-    signIn.setBackground(Color.BLACK);
-    signIn.setForeground(Color.WHITE);
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
+        JTextField usernameField = new JTextField(24);
 
-    JButton signUp = new JButton("Sign Up");
-    signUp.setBackground(new Color(19, 117, 118));
-    signUp.setForeground(Color.WHITE);
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
+        JTextField passwordField = new JTextField(12);
 
-    mainPanel.setLayout(new GridBagLayout());
-    GridBagConstraints c = new GridBagConstraints();
-    c.gridx = 0;
-    c.gridy = 0;
-    c.anchor = GridBagConstraints.CENTER;
-    c.fill = GridBagConstraints.BOTH;
-    c.insets = new Insets(0, 0, 10, 0); 
-    mainPanel.add(titleLabel, c);
+        JButton signIn = new JButton("Sign In");
+        signIn.setBackground(Color.BLACK);
+        signIn.setForeground(Color.WHITE);
 
-    c.gridy = 1;
-    c.anchor = GridBagConstraints.CENTER;
-    mainPanel.add(usernameLabel, c);
+        JButton signUp = new JButton("Sign Up");
+        signUp.setBackground(new Color(19, 117, 118));
+        signUp.setForeground(Color.WHITE);
 
-    c.gridy = 2;
-    mainPanel.add(usernameField, c);
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        buttonPanel.setBackground(mainPanel.getBackground());
 
-    c.gridy = 3;
-    mainPanel.add(passwordLabel, c);
+        buttonPanel.add(signIn);
+        buttonPanel.add(signUp);
+        titlePanel.add(titleLabel);
 
-    c.gridy = 4;
-    mainPanel.add(passwordField, c);
+        mainPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 1;
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.BOTH;
 
-    c.gridy = 5;
-    mainPanel.add(signIn, c);
 
-    c.gridy = 6;
-    mainPanel.add(signUp, c);
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLayout(new BorderLayout());
+        frame.getContentPane().setBackground(new Color(255, 250, 250));
+        frame.add(mainPanel, BorderLayout.CENTER);
+        frame.add(topPanel, BorderLayout.NORTH);
 
-    JFrame frame = new JFrame();
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.setSize(800, 600);
-    frame.setLayout(new BorderLayout());
-    frame.getContentPane().setBackground(new Color(255, 250, 250));
-    frame.add(mainPanel, BorderLayout.CENTER);
-    frame.add(topPanel, BorderLayout.NORTH);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int centerX = (int) screenSize.getWidth() / 2;
+        int centerY = (int) screenSize.getHeight() / 2;
+        frame.setLocation(centerX - frame.getSize().width / 2, centerY - frame.getSize().height / 2);
 
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    int centerX = (int) screenSize.getWidth() / 2;
-    int centerY = (int) screenSize.getHeight() / 2;
-    frame.setLocation(centerX - frame.getSize().width / 2, centerY - frame.getSize().height / 2);
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int width = frame.getWidth();
+                int height = frame.getHeight();
+                float fontSize = 45.0f * Math.min(width, height) / 1000.0f;
+                titleLabel.setFont(titleLabel.getFont().deriveFont(fontSize));
 
-    frame.setVisible(true);
+                if (width < 896) {
+                    fontSize = 45.0f * Math.min(width, height) / 1300.0f;
+                    titleLabel.setFont(titleLabel.getFont().deriveFont(fontSize));
+                }
+            }
+        });
+
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int width = frame.getWidth();
+                int height = frame.getHeight();
+                int insetX = (int)(width * 0.4);
+                int insetY = (int)(height * 0.05);
+
+                c.insets = new Insets(insetY, insetX, insetY, insetX);
+
+                mainPanel.removeAll();
+                mainPanel.setLayout(new GridBagLayout());
+
+                c.gridy = 0;
+                c.insets = new Insets(0, 20, insetY, 20);
+                mainPanel.add(titleLabel, c);
+
+                c.gridy = 1;
+                c.insets = new Insets(0, insetX, 5, insetX);
+                mainPanel.add(usernameLabel, c);
+
+                c.gridy = 2;
+                c.insets = new Insets(0, insetX, 0, insetX);
+                mainPanel.add(usernameField, c);
+
+                c.gridy = 3;
+                c.insets = new Insets(10, insetX, 5, insetX);
+                mainPanel.add(passwordLabel, c);
+
+                c.gridy = 4;
+                c.insets = new Insets(0, insetX, 20, insetX);
+                mainPanel.add(passwordField, c);
+
+                c.gridx = 1;
+                c.gridy = 5;
+                c.weightx = 1.0;
+                c.anchor = GridBagConstraints.CENTER;
+                c.insets = new Insets(0, 20, insetY, 20);
+                mainPanel.add(buttonPanel, c);
+
+                if (width < 896) {
+
+                    insetX = (int)(width * 0.3);
+
+                    c.gridy = 1;
+                    c.insets = new Insets(0, insetX, 2, insetX);
+                    mainPanel.add(usernameLabel, c);
+
+                    c.gridy = 2;
+                    c.insets = new Insets(0, insetX, 0, insetX);
+                    mainPanel.add(usernameField, c);
+
+                    c.gridy = 3;
+                    c.insets = new Insets(6, insetX, 2, insetX);
+                    mainPanel.add(passwordLabel, c);
+
+                    c.gridy = 4;
+                    c.insets = new Insets(0, insetX, 15, insetX);
+                    mainPanel.add(passwordField, c);
+                }
+
+                mainPanel.revalidate();
+                mainPanel.repaint();
+            }
+        });
+
+        frame.setVisible(true);
     }
 
 }
