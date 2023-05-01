@@ -1,13 +1,22 @@
 package mainApp;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import javax.swing.*;
 
 
-public class LoginMenu extends javax.swing.JFrame {
-
+public class LoginMenu extends javax.swing.JFrame implements ActionListener{
+    JButton signIn;
+    JPasswordField passwordField;
+    JTextField usernameField;
+    String[] login;
+    JFrame frame;
     public LoginMenu() {
 
         JPanel mainPanel = new JPanel();
@@ -30,15 +39,16 @@ public class LoginMenu extends javax.swing.JFrame {
 
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
-        JTextField usernameField = new JTextField(24);
+        usernameField = new JTextField(24);
 
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
-        JTextField passwordField = new JTextField(12);
+        passwordField = new JPasswordField(12);
 
-        JButton signIn = new JButton("Sign In");
+        signIn = new JButton("Sign In");
         signIn.setBackground(Color.BLACK);
         signIn.setForeground(Color.WHITE);
+        signIn.addActionListener(this);
 
         JButton signUp = new JButton("Sign Up");
         signUp.setBackground(new Color(19, 117, 118));
@@ -58,7 +68,7 @@ public class LoginMenu extends javax.swing.JFrame {
         c.fill = GridBagConstraints.BOTH;
 
 
-        JFrame frame = new JFrame();
+        frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
         frame.setLayout(new BorderLayout());
@@ -153,6 +163,26 @@ public class LoginMenu extends javax.swing.JFrame {
         });
 
         frame.setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == signIn) {
+            String user = usernameField.getText();
+            String passwordPlaceholder = String.valueOf(passwordField.getPassword());
+            try {
+                login = servController.getLoginCred(user, passwordPlaceholder);
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            if ((user.equals(login[0])) && (passwordPlaceholder.equals(login[1]))) 
+            {
+                    signIn.setBackground(Color.green);
+                    System.out.println("boom");
+            } else {
+                System.out.println("Check your credentials again");
+            }
+        }
     }
 
 }
