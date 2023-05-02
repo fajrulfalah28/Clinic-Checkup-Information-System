@@ -13,7 +13,7 @@ log on
 (
 name = clinic_log,
 filename = 'C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\clinic.ldf',
-size = 10MB,
+size = 5MB,
 maxsize = 100MB,
 filegrowth = 5MB
 )
@@ -34,114 +34,115 @@ create schema clinic go
 
 --CREATE TABLE
 use clinic go
-create table person.patient
+create table person.person --PERSON
 (
-patientID int constraint PKpatientID primary key identity(1,1) not null,
-firstName varchar(15) not null check(firstName not like '%[^a-zA-Z]%'),
-lastName varchar(15) check(lastName not like '%[^a-zA-Z]%') default '',
-dateofBirth date not null check(dateofBirth <= getdate()),
-gender varchar(1) not null check(gender in ('M','F')),
-cityAddress varchar(15) not null check(cityAddress not like '%[^a-zA-Z]%'),
-streetAddress varchar(15) not null,
+personID bigint constraint PKpersonID primary key identity(1,1) not null,
+IDCardNumber bigint unique not null,
+firstName varchar(20) not null,
+lastName varchar(20) default '' not null,
+dateofBirth date not null,
+gender varchar(1) not null,
+cityAddress varchar(20) not null,
+streetAddress varchar(20) not null,
 zipCode int not null,
-email varchar(50) not null,
-contactName1 varchar(15) not null check(contactName1 not like '%[^a-zA-Z]%'),
-phoneNumber1 bigInt not null,
-contactName2 varchar(15) not null check(contactName2 not like '%[^a-zA-Z]%'),
-phoneNumber2 bigInt not null
+email varchar(20) unique not null,
+phoneNumber bigint unique not null,
+contact1Name varchar(20) not null,
+contact1phoneNumber bigInt not null,
+contact2Name varchar(20),
+contact2phoneNumber bigInt,
+accountStatus varchar(20),
+dateModified dateTime default getDate() not null
 )
 
-create table person.employee
+create table person.roles --ROLES
 (
-employeeID int constraint PKemployeeID primary key identity(1,1) not null,
-firstName varchar(15) not null check(firstName not like '%[^a-zA-Z]%'),
-lastName varchar(15) check(lastName not like '%[^a-zA-Z]%') default '',
-dateofBirth date not null check(dateofBirth <= getdate()),
-gender varchar(1) not null check(gender in ('M','F')),
-cityAddress varchar(15) not null check(cityAddress not like '%[^a-zA-Z]%'),
-streetAddress varchar(15) not null,
-zipCode int not null,
-email varchar(50) not null,
-contactName1 varchar(15) not null check(contactName1 not like '%[^a-zA-Z]%'),
-phoneNumber1 bigInt not null,
-contactName2 varchar(15) not null check(contactName2 not like '%[^a-zA-Z]%'),
-phoneNumber2 bigInt not null
+roleID int constraint PKjobID primary key identity(1,1) not null,
+jobPosition varchar(8) not null,
+dateModified dateTime default getDate() not null
 )
 
-create table person.schedule 
+create table person.schedule --SCHEDULE
 (
 scheduleID int constraint PKscheduleID primary Key identity(1,1) not null,
-employeeID int constraint FKemployeeID foreign key(employeeID) references person.employee(employeeID) not null,
-DayN varchar(9) not null,
+personID int constraint scheduleFKpersonID foreign key(personID) references person.person(personID) not null,
+daySchedule varchar(10) not null,
 startHour time not null,
-endHour time not null
+endHour time not null,
+dateModified dateTime default getDate() not null
 )
 
-create table person.jobID
+create table clinic.loginCredential -- LOGIN CREDENTIAL
 (
-jobID int constraint PKjobID primary key identity(1,1) not null,
-jobPosition varchar(15) not null check(jobPosition not like '%[^a-zA-Z]%')
+userID int constraint PKscheduleID primary Key identity(1,1) not null,
+userPassword varchar(20) not null,
+personID int constraint scheduleFKpersonID foreign key(personID) references person.person(personID) not null
 )
 
-create table clinic.appointment
+create table clinic.appointment --APPOINTMENT
 (
 appointmentID int constraint PKappointmentID primary key identity(1,1) not null,
-patientID int constraint FKpatientID foreign key(patientID) references person.patient(patientID) not null,
-employeeID int constraint FKemployeeID foreign key(employeeID) references person.employee(employeeID) not null,
+patientID int constraint appointmentFKpatientID foreign key(patientID) references person.person(personID) not null,
+employeeID int constraint appointmentFKemployeeID foreign key(employeeID) references person.person(personID) not null,
 appointmentStatus varchar(10) not null,
-appointmentDate dateTime not null
+appointmentDate dateTime not null,
+dateModified dateTime default getDate() not null
 )
 
-create table clinic.medicalRecord
+create table clinic.medicalRecord --MEDICAL RECORD
 (
 MRID int constraint PKMRID primary key identity(1,1) not null,
-patientID int constraint FKpatientID_MR foreign key(patientID) references person.patient(patientID) not null,
-employeeID int constraint FKemployeeID_MR foreign key(employeeID) references person.employee(employeeID) not null,
+patientID int constraint MRFKpatientID foreign key(patientID) references person.person(personID) not null,
+employeeID int constraint MRFKemployeeID foreign key(employeeID) references person.person(personID) not null,
 systolic int not null,
 diastolic int not null,
 heartRate int not null,
 bodyTemperature int not null,
 bodyheight int not null,
 bodyWeight int not null,
-recordTime dateTime not null
+dateModified dateTime default getDate() not null
 )
 
-create table clinic.diagnosis
+create table clinic.diagnosis --DIAGNOSIS
 (
 diagnosisID int constraint PKdiagnosisID primary key identity(1,1) not null,
-patientID int constraint FKpatientID_D foreign key(patientID) references person.patient(patientID) not null,
-employeeID int constraint FKemployeeID_D foreign key(employeeID) references person.employee(employeeID) not null,
+patientID int constraint diagnosisFKpatientID foreign key(patientID) references person.person(personID) not null,
+employeeID int constraint diagnosisFKemployeeID foreign key(employeeID) references person.person(personID) not null,
 diagnosisResult varchar (100),
-actionStatus varchar(20)
+actionStatus varchar(20),
+dateModified dateTime default getDate() not null
 )
 
-create table clinic.prescription
+create table clinic.prescription --PRESCRIPTION
 (
 prescriptionID int constraint PKprescriptionID primary key identity(1,1) not null,
-patientID int constraint FKpatientID_P foreign key(patientID) references person.patient(patientID) not null,
-employeeID int constraint FKemployeeID_Pr foreign key(employeeID) references person.employee(employeeID) not null,
+patientID int constraint prescriptionFKpatientID foreign key(patientID) references person.person(personID) not null,
+employeeID int constraint prescriptionFKemployeeID foreign key(employeeID) references person.person(personID) not null,
 medicineName varchar(20) not null,
 medicineQTY int not null,
 medicationDosage varchar(40) not null,
+dateModified dateTime default getDate() not null
 )
 
-create table clinic.payment
+create table clinic.payment --PAYMENT
 (
 paymentID int constraint PKpaymentID primary key identity(1,1) not null,
-appointmentID int constraint FKappointmentID foreign key(appointmentID) references clinic.appointment(appointmentID) not null,
+appointmentID int constraint paymentFKappointmentID foreign key(appointmentID) references clinic.appointment(appointmentID) not null,
 paymentMethod varchar(10) not null,
 chargedAmmount int not null,
-paymentStatus varchar(10),
-paymentTime dateTime
+paymentStatus varchar(10) not null,
+paymentTime dateTime not null,
+dateModified dateTime default getDate() not null
 )
 
-create table clinic.referral
+create table clinic.referral --REFERRAL
 (
 referralID int constraint PKreferralID primary key identity(1,1) not null,
-diagnosisID int constraint FKdiagnosisID foreign key(diagnosisID) references clinic.diagnosis(diagnosisID) not null,
+diagnosisID int constraint referralFKdiagnosisID foreign key(diagnosisID) references clinic.diagnosis(diagnosisID) not null,
 hospitalName varchar(20) not null,
 medicalSpecialties varchar(20) not null,
-referralTime dateTime not null
+referralTime dateTime not null,
+dateModified dateTime default getDate() not null
 )
 
 
@@ -149,6 +150,98 @@ referralTime dateTime not null
 
 
 --CREATE PROCEDURE
+use clinic go
+create procedure registerPerson --REGISTER PERSON
+@IDCardNumber bigint,
+@firstName varchar(20),
+@lastName varchar(20),
+@dateofBirth date,
+@gender varchar(1),
+@cityAddress varchar(20),
+@streetAddress varchar(20),
+@zipCode int,
+@email varchar(20),
+@phoneNumber bigint,
+@contact1Name varchar(20),
+@contact1phoneNumber bigint,
+@contact2Name varchar(20),
+@contact2phoneNumber bigint
+as
+insert into person.person(IDCardNumber,firstName,lastName,dateofBirth,gender,cityAddress,streetAddress,zipCode,email,phoneNumber,contact1Name,contact1phoneNumber,contact2Name,contact2phoneNumber)
+values (@IDCardNumber,@firstName,@lastName,@dateofBirth,@gender,@cityAddress,@streetAddress,@zipCode,@email,@phoneNumber,@contact1Name,@contact1phoneNumber,@contact2Name,@contact2phoneNumber)
+go
+
+create procedure displayPerson --DISPLAY PERSON
+@userIDInput varchar(20)
+as
+select * from person.person 
+where 
+person.person.personID = @userIDInput OR 
+person.person.IDCardNumber = @userIDInput OR
+person.person.phoneNumber = @userIDInput
+go
+
+create procedure updatePersonIDCardNumber --UPDATE PERSON
+@userIDInput varchar(20),
+@IDCardNumber bigint
+as
+insert into person.person
+select * from person.person
+where
+person.person.personID = @userIDInput OR 
+person.person.IDCardNumber = @userIDInput OR
+person.person.phoneNumber = @userIDInput
+update person.person
+set IDCardNumber = @IDCardNumber
+where
+person.person.personID = @userIDInput OR 
+person.person.IDCardNumber = @userIDInput OR
+person.person.phoneNumber = @userIDInput
+go
+
+create procedure createRoles --CREATE ROLES
+as
+go
+
+create procedure createSchedule --CREATE SCHEDULE
+as
+go
+
+create procedure createAppointment --CREATE APPOINTMENT
+as
+go
+
+create procedure createMedicalRecord --CREATE MEDICAL RECORD
+as
+go
+
+create procedure createDiagnosis --CREATE DIAGNOSIS
+as
+go
+
+create procedure createPrescription --CREATE PRESCRIPTION
+as
+go
+
+create procedure createPayment --CREATE PAYMENT
+as
+go
+
+create procedure createReferral --CREATE REFERRAL
+as
+go
+
+create procedure displayReferral --DISPLAY REFERRAL
+as
+go
+
+create procedure updateReferral --UPDATE REFERRAL
+as
+go
+
+create procedure deleteReferral --DELETE REFERRAL
+as
+go
 
 
 
