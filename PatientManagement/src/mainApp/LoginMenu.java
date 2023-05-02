@@ -1,11 +1,7 @@
 package mainApp;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.sql.ResultSet;
+import java.awt.event.*;
 import java.sql.SQLException;
 
 import javax.swing.*;
@@ -45,20 +41,15 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener{
         passwordLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
         passwordField = new JPasswordField(12);
 
-        signIn = new JButton("Sign In");
+        signIn = new JButton("Log In");
         signIn.setBackground(Color.BLACK);
         signIn.setForeground(Color.WHITE);
         signIn.addActionListener(this);
-
-        JButton signUp = new JButton("Sign Up");
-        signUp.setBackground(new Color(19, 117, 118));
-        signUp.setForeground(Color.WHITE);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.setBackground(mainPanel.getBackground());
 
         buttonPanel.add(signIn);
-        buttonPanel.add(signUp);
         titlePanel.add(titleLabel);
 
         mainPanel.setLayout(new GridBagLayout());
@@ -67,10 +58,9 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener{
         c.anchor = GridBagConstraints.CENTER;
         c.fill = GridBagConstraints.BOTH;
 
-
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setSize(1920, 1080);
         frame.setLayout(new BorderLayout());
         frame.getContentPane().setBackground(new Color(255, 250, 250));
         frame.add(mainPanel, BorderLayout.CENTER);
@@ -86,23 +76,10 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener{
             public void componentResized(ComponentEvent e) {
                 int width = frame.getWidth();
                 int height = frame.getHeight();
-                float fontSize = 45.0f * Math.min(width, height) / 1000.0f;
-                titleLabel.setFont(titleLabel.getFont().deriveFont(fontSize));
-
-                if (width < 896) {
-                    fontSize = 45.0f * Math.min(width, height) / 1300.0f;
-                    titleLabel.setFont(titleLabel.getFont().deriveFont(fontSize));
-                }
-            }
-        });
-
-        frame.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                int width = frame.getWidth();
-                int height = frame.getHeight();
                 int insetX = (int)(width * 0.4);
                 int insetY = (int)(height * 0.05);
+                float fontSize = 45.0f * Math.min(width, height) / 1000.0f;
+                titleLabel.setFont(titleLabel.getFont().deriveFont(fontSize));
 
                 c.insets = new Insets(insetY, insetX, insetY, insetX);
 
@@ -129,7 +106,6 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener{
                 c.insets = new Insets(0, insetX, 20, insetX);
                 mainPanel.add(passwordField, c);
 
-                c.gridx = 1;
                 c.gridy = 5;
                 c.weightx = 1.0;
                 c.anchor = GridBagConstraints.CENTER;
@@ -137,7 +113,8 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener{
                 mainPanel.add(buttonPanel, c);
 
                 if (width < 896) {
-
+                    fontSize = 45.0f * Math.min(width, height) / 1300.0f;
+                    titleLabel.setFont(titleLabel.getFont().deriveFont(fontSize));
                     insetX = (int)(width * 0.3);
 
                     c.gridy = 1;
@@ -161,7 +138,6 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener{
                 mainPanel.repaint();
             }
         });
-
         frame.setVisible(true);
     }
 
@@ -178,6 +154,7 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener{
             if ((user.equals(login[0])) && (passwordPlaceholder.equals(login[1]))) 
             {
                     DoctorMenu docmenu = new DoctorMenu();
+                    frame.dispose();
             } else {
                 System.out.println("Check your credentials again");
             }
