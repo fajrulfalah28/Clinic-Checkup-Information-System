@@ -177,8 +177,7 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener{
             }
             if ((user.equals(login[0])) && (passwordPlaceholder.equals(login[1]))) 
             {
-                    signIn.setBackground(Color.green);
-                    System.out.println("boom");
+                    DoctorMenu docmenu = new DoctorMenu();
             } else {
                 System.out.println("Check your credentials again");
             }
