@@ -10,8 +10,8 @@ import java.util.ArrayList;
 
 public class servController {
     //Connection Controller
-    private final static String servUser ="toka";
-	private final static String servPassword = "toka123";
+    private final static String servUser ="Faun";
+	private final static String servPassword = "Faun1122";
 	private final static String servDB = "clinic";
 	private final static String url = "jdbc:sqlserver://localhost;DatabaseName=" + servDB + ";user="+ servUser +";password="+ servPassword+";encrypt=true;trustServerCertificate=true";
     static Connection connect;
