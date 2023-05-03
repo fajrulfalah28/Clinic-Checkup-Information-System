@@ -365,15 +365,7 @@ public class AdminMenu extends javax.swing.JFrame {
     addButton.setFont(new Font("Poppins", Font.BOLD, 18));
     addButton.setForeground(Color.WHITE);
     addButton.setBackground(Color.BLACK);
-    addButton.addActionListener(
-      new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          AddRecord addRecord = new AddRecord(table);
-          addRecord.AddRecord();
-        }
-      }
-    );
+
     buttonPanel.add(addButton);
     patientPanel.addComponentListener(
       new ComponentAdapter() {

@@ -1,99 +1,123 @@
 package mainApp;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-public class AddRecord {
+public class AddRecord extends JFrame {
 
-  private JTable table;
+  private JLabel patientNameLabel;
+  private JLabel currentDateLabel;
+  private JLabel diagnosisResultLabel;
+  private JTextArea diagnosisResultTextArea;
+  private JRadioButton referralRadioButton;
+  private JRadioButton prescriptionRadioButton;
+  private ButtonGroup actionStatusButtonGroup;
 
-  public AddRecord(JTable table) {
-    this.table = table;
-  }
+  public AddRecord(String patientName) {
+    super("Add Record");
+    setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+    setSize(400, 400);
+    setLocationRelativeTo(null);
+    setResizable(false);
 
-  public void AddRecord() {
-    JFrame frame = new JFrame("Add Record");
-    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    frame.getContentPane().setBackground(new Color(235, 216, 200));
-    frame.getContentPane().setLayout(new GridBagLayout());
-    GridBagConstraints c = new GridBagConstraints();
-    c.insets = new Insets(5, 5, 5, 5);
-    c.anchor = GridBagConstraints.WEST;
-    Font boldFont = new Font("Poppins", Font.BOLD, 14);
-    Font plainFont = new Font("Poppins", Font.PLAIN, 14);
+    patientNameLabel = new JLabel("Patient Name: " + patientName);
+    patientNameLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
+    patientNameLabel.setForeground(Color.BLACK);
 
-    JLabel nameLabel = new JLabel("Patient Name:");
-    nameLabel.setFont(boldFont);
-    c.gridx = 0;
-    c.gridy = 0;
-    frame.getContentPane().add(nameLabel, c);
+    LocalDateTime now = LocalDateTime.now();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy");
+    String currentDate = now.format(formatter);
+    currentDateLabel = new JLabel("Date: " + currentDate);
+    currentDateLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
+    currentDateLabel.setForeground(Color.BLACK);
 
-    JTextField nameField = new JTextField(20);
-    nameField.setFont(plainFont);
-    c.gridx = 1;
-    c.gridy = 0;
-    frame.getContentPane().add(nameField, c);
+    diagnosisResultLabel = new JLabel("Diagnosis Result:");
+    diagnosisResultLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
+    diagnosisResultLabel.setForeground(Color.BLACK);
 
-    JLabel diagnosisLabel = new JLabel("Diagnosis Result:");
-    diagnosisLabel.setFont(boldFont);
-    c.gridx = 0;
-    c.gridy = 1;
-    frame.getContentPane().add(diagnosisLabel, c);
+    diagnosisResultTextArea = new JTextArea();
+    diagnosisResultTextArea.setFont(new Font("Poppins", Font.PLAIN, 14));
+    diagnosisResultTextArea.setPreferredSize(new Dimension(350, 100));
 
-    JTextArea diagnosisArea = new JTextArea(5, 20);
-    diagnosisArea.setFont(plainFont);
-    JScrollPane diagnosisScrollPane = new JScrollPane(diagnosisArea);
-    c.gridx = 1;
-    c.gridy = 1;
-    frame.getContentPane().add(diagnosisScrollPane, c);
+    referralRadioButton = new JRadioButton("Referral");
+    referralRadioButton.setFont(new Font("Poppins", Font.PLAIN, 14));
+    referralRadioButton.setForeground(Color.BLACK);
 
-    JLabel actionLabel = new JLabel("Action Status:");
-    actionLabel.setFont(boldFont);
-    c.gridx = 0;
-    c.gridy = 2;
-    frame.getContentPane().add(actionLabel, c);
+    prescriptionRadioButton = new JRadioButton("Prescription");
+    prescriptionRadioButton.setFont(new Font("Poppins", Font.PLAIN, 14));
+    prescriptionRadioButton.setForeground(Color.BLACK);
 
-    JComboBox<String> actionComboBox = new JComboBox<>(new String[]{"a", "b"});
-    actionComboBox.setFont(plainFont);
-    c.gridx = 1;
-    c.gridy = 2;
-    frame.getContentPane().add(actionComboBox, c);
+    actionStatusButtonGroup = new ButtonGroup();
+    actionStatusButtonGroup.add(referralRadioButton);
+    actionStatusButtonGroup.add(prescriptionRadioButton);
 
-    JButton addButton = new JButton("Add");
-    addButton.setFont(new Font("Poppins", Font.BOLD, 18));
-    addButton.setForeground(Color.WHITE);
-    addButton.setBackground(Color.BLACK);
-    c.gridx = 0;
-    c.gridy = 3;
-    c.gridwidth = 2;
-    c.anchor = GridBagConstraints.CENTER;
-    addButton.addActionListener(
+    JButton finishSessionButton = new JButton("Finish Session");
+    finishSessionButton.setFont(new Font("Poppins", Font.BOLD, 14));
+    finishSessionButton.setForeground(Color.WHITE);
+    finishSessionButton.setBackground(Color.BLACK);
+    finishSessionButton.setPreferredSize(new Dimension(175, 30));
+    finishSessionButton.addActionListener(
       new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
-          String name = nameField.getText();
-          String diagnosis = diagnosisArea.getText();
-          String action = (String) actionComboBox.getSelectedItem();
+          String name = patientName;
+          String diagnosis = diagnosisResultTextArea.getText();
+          String status = "";
+          if (prescriptionRadioButton.isSelected()) {
+            status = "Prescription";
+          } else if (referralRadioButton.isSelected()) {
+            status = "Referral";
+          }
+          String date = currentDateLabel.getText().substring(6);
 
-          Object[] record = {
-            name,
-            diagnosis,
-            action
-          };
+          Object[] rowData = { name, diagnosis, status, date };
 
+          /*
           DefaultTableModel model = (DefaultTableModel) table.getModel();
+          model.addRow(rowData);
+          
+          Masih binggung add rownya
+          */
 
-          model.addRow(record);
-
-          frame.dispose();
+          dispose();
         }
       }
     );
-    frame.getContentPane().add(addButton, c);
 
-    frame.pack();
-    frame.setLocationRelativeTo(null);
-    frame.setVisible(true);
+    JPanel contentPane = new JPanel(new GridBagLayout());
+    GridBagConstraints c = new GridBagConstraints();
+    c.gridx = 0;
+    c.gridy = 0;
+    c.insets = new Insets(10, 10, 10, 10);
+    c.anchor = GridBagConstraints.WEST;
+    contentPane.add(patientNameLabel, c);
+
+    c.gridy = 1;
+    contentPane.add(currentDateLabel, c);
+
+    c.gridy = 2;
+    contentPane.add(diagnosisResultLabel, c);
+
+    c.gridy = 3;
+    contentPane.add(diagnosisResultTextArea, c);
+
+    c.gridy = 4;
+    contentPane.add(referralRadioButton, c);
+
+    c.gridx = 1;
+    contentPane.add(prescriptionRadioButton, c);
+
+    c.gridx = 0;
+    c.gridy = 5;
+    c.gridwidth = 2;
+    c.anchor = GridBagConstraints.CENTER;
+    contentPane.add(finishSessionButton, c);
+
+    setContentPane(contentPane);
   }
 }

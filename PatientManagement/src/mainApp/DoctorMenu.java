@@ -16,6 +16,7 @@ public class DoctorMenu extends javax.swing.JFrame {
   private JTabbedPane tabbedPane;
   private List<LocalDateTime> dates;
   private JLabel scheduleLabel;
+  private JTable table;
 
   public DoctorMenu() {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -39,7 +40,6 @@ public class DoctorMenu extends javax.swing.JFrame {
           mainPanel
         );
         DoctorMenu.dispose();
-
       }
     });
     logoutButton.setFont(new Font("Poppins", Font.BOLD, 21));
@@ -187,152 +187,172 @@ public class DoctorMenu extends javax.swing.JFrame {
     return homePanel;
   }
 
-    public JPanel createAppointmentPanel() {
-      JPanel appointmentPanel = new JPanel();
-      appointmentPanel.setBackground(new Color(235, 216, 200));
-      appointmentPanel.setLayout(new GridBagLayout());
-  
-      appointmentPanel.setLayout(new GridBagLayout());
-      GridBagConstraints c = new GridBagConstraints();
-      c.gridx = 0;
-      c.anchor = GridBagConstraints.CENTER;
-      c.fill = GridBagConstraints.BOTH;
-  
-      JLabel titleLabel = new JLabel("Hey doctor Fajrul,", JLabel.CENTER);
-      titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
-      titleLabel.setForeground(new Color(19, 117, 118));
-      c.gridy = 0;
-      c.insets = new Insets(20, 0, 0, 0);
-      appointmentPanel.add(titleLabel, c);
-  
-      JLabel chooseLabel = new JLabel(
-        "Here are your appointment schedule...",
-        JLabel.CENTER
-      );
-      chooseLabel.setFont(new Font("Poppins", Font.PLAIN, 16));
-      chooseLabel.setForeground(Color.BLACK);
-      c.gridy = 1;
-      c.insets = new Insets(0, 0, 20, 0);
-      appointmentPanel.add(chooseLabel, c);
-  
-      JLabel shiftLabel = new JLabel(
-        "Your current shift is: 08:00 - 17:00",
-        JLabel.CENTER
-      );
-      shiftLabel.setFont(new Font("Poppins", Font.BOLD, 16));
-      shiftLabel.setForeground(new Color(19, 117, 118));
-      c.gridy = 2;
-      c.insets = new Insets(0, 0, 30, 0);
-      appointmentPanel.add(shiftLabel, c);
-  
-      JTable table = new JTable(getData(), getColumnNames());
-      JScrollPane tableScrollPane = new JScrollPane(table);
-      c.gridy = 3;
-      c.insets = new Insets(0, 50, 0, 50);
-      c.weightx = 1.0;
-      c.weighty = 1.0;
-      table.setEnabled(false);
-      appointmentPanel.add(tableScrollPane, c);
-  
-      scheduleLabel = new JLabel(getScheduleLabelText(), JLabel.CENTER);
-      scheduleLabel.setFont(new Font("Poppins", Font.BOLD, 16));
-      scheduleLabel.setForeground(new Color(19, 117, 118));
-      c.gridy = 4;
-      c.insets = new Insets(0, 0, 0, 0);
-      appointmentPanel.add(scheduleLabel, c);
-  
-      JPanel buttonPanel = new JPanel();
-      buttonPanel.setBackground(new Color(235, 216, 200));
-      c.gridy = 5;
-      c.insets = new Insets(0, 0, 10, 0);
-      c.weightx = 1.0;
-  
-      JButton addButton = new JButton("Change Shift");
-      addButton.setFont(new Font("Poppins", Font.BOLD, 18));
-      addButton.setForeground(Color.WHITE);
-      addButton.setBackground(Color.BLACK);
-      addButton.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            ShiftChange shiftChange = new ShiftChange(shiftLabel);
-            shiftChange.setVisible(true);
-          }
+  public JPanel createAppointmentPanel() {
+    JPanel appointmentPanel = new JPanel();
+    appointmentPanel.setBackground(new Color(235, 216, 200));
+    appointmentPanel.setLayout(new GridBagLayout());
+
+    appointmentPanel.setLayout(new GridBagLayout());
+    GridBagConstraints c = new GridBagConstraints();
+    c.gridx = 0;
+    c.anchor = GridBagConstraints.CENTER;
+    c.fill = GridBagConstraints.BOTH;
+
+    JLabel titleLabel = new JLabel("Hey doctor Fajrul,", JLabel.CENTER);
+    titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
+    titleLabel.setForeground(new Color(19, 117, 118));
+    c.gridy = 0;
+    c.insets = new Insets(20, 0, 0, 0);
+    appointmentPanel.add(titleLabel, c);
+
+    JLabel chooseLabel = new JLabel(
+      "Here are your appointment schedule...",
+      JLabel.CENTER
+    );
+    chooseLabel.setFont(new Font("Poppins", Font.PLAIN, 16));
+    chooseLabel.setForeground(Color.BLACK);
+    c.gridy = 1;
+    c.insets = new Insets(0, 0, 20, 0);
+    appointmentPanel.add(chooseLabel, c);
+
+    JLabel shiftLabel = new JLabel(
+      "Your current shift is: 08:00 - 17:00",
+      JLabel.CENTER
+    );
+    shiftLabel.setFont(new Font("Poppins", Font.BOLD, 16));
+    shiftLabel.setForeground(new Color(19, 117, 118));
+    c.gridy = 2;
+    c.insets = new Insets(0, 0, 30, 0);
+    appointmentPanel.add(shiftLabel, c);
+
+    JTable table = new JTable(getData(), getColumnNames());
+    JScrollPane tableScrollPane = new JScrollPane(table);
+    c.gridy = 3;
+    c.insets = new Insets(0, 50, 0, 50);
+    c.weightx = 1.0;
+    c.weighty = 1.0;
+    table.setEnabled(false);
+    appointmentPanel.add(tableScrollPane, c);
+
+    scheduleLabel = new JLabel(getScheduleLabelText(), JLabel.CENTER);
+    scheduleLabel.setFont(new Font("Poppins", Font.BOLD, 16));
+    scheduleLabel.setForeground(new Color(19, 117, 118));
+    c.gridy = 4;
+    c.insets = new Insets(0, 0, 0, 0);
+    appointmentPanel.add(scheduleLabel, c);
+
+    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+    buttonPanel.setBackground(new Color(235, 216, 200));
+
+    JButton changeShiftButton = new JButton("Change Shift");
+    changeShiftButton.setFont(new Font("Poppins", Font.BOLD, 14));
+    changeShiftButton.setForeground(Color.WHITE);
+    changeShiftButton.setBackground(Color.BLACK);
+    changeShiftButton.setPreferredSize(new Dimension(175, 30));
+    changeShiftButton.addActionListener(
+      new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          ShiftChange shiftChange = new ShiftChange(shiftLabel);
+          shiftChange.setVisible(true);
         }
-      );
-      buttonPanel.add(addButton);
-  
-      appointmentPanel.addComponentListener(
-        new ComponentAdapter() {
-          @Override
-          public void componentResized(ComponentEvent e) {
-            int width = appointmentPanel.getWidth();
-            int height = appointmentPanel.getHeight();
-  
-            float fontSize = 30.0f * Math.min(width, height) / 1000.0f;
-            buttonPanel.setFont(buttonPanel.getFont().deriveFont(fontSize));
-            appointmentPanel.add(buttonPanel, c);
-  
-            fontSize = 45.0f * Math.min(width, height) / 1000.0f;
-            titleLabel.setFont(titleLabel.getFont().deriveFont(fontSize));
-  
-            fontSize = 27.0f * Math.min(width, height) / 1000.0f;
-            chooseLabel.setFont(chooseLabel.getFont().deriveFont(fontSize));
-          }
-        }
-      );
-  
-      return appointmentPanel;
-  }
-  
-  private Object[][] getData() {
-      Object[][] data = {
-        { "May 3, 2023", "10:00 AM", "John Doe" },
-        { "May 4, 2023", "2:30 PM", "Jane Smith" },
-        { "May 5, 2023", "11:15 AM", "Bob Johnson" },
-      };
-  
-      return data;
-  }
-  
-  private String[] getColumnNames() {
-      String[] columnNames = { "Date", "Time", "Patient Name" };
-      return columnNames;
-  }
-  
-  private String getScheduleLabelText() {
-      Object[][] data = getData();
-  
-      LocalDateTime now = LocalDateTime.now();
-      LocalDateTime closestDateTime = null;
-      for (Object[] row : data) {
-          String dateStr = (String) row[0];
-          String timeStr = (String) row[1];
-          String dateTimeStr = dateStr + " " + timeStr;
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
-                  "MMMM d, yyyy h:mm a"
+      }
+    );
+    buttonPanel.add(changeShiftButton);
+
+    JButton startSessionButton = new JButton("Start Session");
+    startSessionButton.setFont(new Font("Poppins", Font.BOLD, 14));
+    startSessionButton.setForeground(Color.WHITE);
+    startSessionButton.setBackground(Color.BLACK);
+    startSessionButton.setPreferredSize(new Dimension(175, 30));
+    startSessionButton.addActionListener(
+      new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          StartSessionFrame startSessionFrame = new StartSessionFrame(
+            getData()
           );
-          LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, formatter);
-          if (dateTime.isAfter(now)) {
-              closestDateTime = dateTime;
-              break;
-          }
+          startSessionFrame.setVisible(true);
+        }
       }
-      if (closestDateTime == null) {
-          return "No upcoming appointments";
+    );
+    buttonPanel.add(startSessionButton);
+
+    c.gridy = 5;
+    c.weightx = 1.0;
+    c.anchor = GridBagConstraints.CENTER;
+    appointmentPanel.add(buttonPanel, c);
+
+    appointmentPanel.addComponentListener(
+      new ComponentAdapter() {
+        @Override
+        public void componentResized(ComponentEvent e) {
+          int width = appointmentPanel.getWidth();
+          int height = appointmentPanel.getHeight();
+
+          float fontSize = 30.0f * Math.min(width, height) / 1000.0f;
+          buttonPanel.setFont(buttonPanel.getFont().deriveFont(fontSize));
+          appointmentPanel.add(buttonPanel, c);
+
+          fontSize = 45.0f * Math.min(width, height) / 1000.0f;
+          titleLabel.setFont(titleLabel.getFont().deriveFont(fontSize));
+
+          fontSize = 27.0f * Math.min(width, height) / 1000.0f;
+          chooseLabel.setFont(chooseLabel.getFont().deriveFont(fontSize));
+        }
       }
-  
-      Duration duration = Duration.between(now, closestDateTime);
-      long hours = duration.toHours();
-      long minutes = duration.toMinutes() % 60;
-  
-      String labelStr = String.format(
-              "Your next appointment will be held in %d hours and %d minutes",
-              hours,
-              minutes
+    );
+    return appointmentPanel;
+  }
+
+  private Object[][] getData() {
+    Object[][] data = {
+      { "May 3, 2023", "10:00 AM", "John Doe" },
+      { "May 4, 2023", "2:30 PM", "Jane Smith" },
+      { "May 5, 2023", "11:15 AM", "Bob Johnson" },
+    };
+
+    return data;
+  }
+
+  private String[] getColumnNames() {
+    String[] columnNames = { "Date", "Time", "Patient Name" };
+    return columnNames;
+  }
+
+  private String getScheduleLabelText() {
+    Object[][] data = getData();
+
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime closestDateTime = null;
+    for (Object[] row : data) {
+      String dateStr = (String) row[0];
+      String timeStr = (String) row[1];
+      String dateTimeStr = dateStr + " " + timeStr;
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+        "MMMM d, yyyy h:mm a"
       );
-  
-      return labelStr;
+      LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, formatter);
+      if (dateTime.isAfter(now)) {
+        closestDateTime = dateTime;
+        break;
+      }
+    }
+    if (closestDateTime == null) {
+      return "No upcoming appointments";
+    }
+
+    Duration duration = Duration.between(now, closestDateTime);
+    long hours = duration.toHours();
+    long minutes = duration.toMinutes() % 60;
+
+    String labelStr = String.format(
+      "Your next appointment will be held in %d hours and %d minutes",
+      hours,
+      minutes
+    );
+
+    return labelStr;
   }
 
   public JPanel createPatientPanel() {
@@ -340,7 +360,6 @@ public class DoctorMenu extends javax.swing.JFrame {
     patientPanel.setBackground(new Color(235, 216, 200));
     patientPanel.setLayout(new GridBagLayout());
 
-    patientPanel.setLayout(new GridBagLayout());
     GridBagConstraints c = new GridBagConstraints();
     c.gridx = 0;
     c.anchor = GridBagConstraints.CENTER;
@@ -354,7 +373,7 @@ public class DoctorMenu extends javax.swing.JFrame {
     patientPanel.add(titleLabel, c);
 
     JLabel chooseLabel = new JLabel(
-      "Here are your patient list",
+      "Here are your patient session history",
       JLabel.CENTER
     );
     chooseLabel.setFont(new Font("Poppins", Font.PLAIN, 16));
@@ -375,47 +394,47 @@ public class DoctorMenu extends javax.swing.JFrame {
     searchButton.addActionListener(
       new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          // buat search
+          String searchTerm = searchField.getText();
+
+          List<Object[]> filteredRows = performSearch(searchTerm);
+
+          DefaultTableModel model = (DefaultTableModel) table.getModel();
+          model.setDataVector(
+            filteredRows.toArray(new Object[0][]),
+            new String[] {
+              "Patient Name",
+              "Diagnosis Result",
+              "Status",
+              "Date",
+            }
+          );
+        }
+
+        private List<Object[]> performSearch(String searchTerm) {
+          return null;
         }
       }
     );
     searchPanel.add(searchButton, BorderLayout.EAST);
     patientPanel.add(searchPanel, c);
 
-    String[] columnNames = {
-      "Patient", "Diagnosis Result", "Action Status" 
-    };
-    DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-    JTable table = new JTable(model);
-    JScrollPane tableScrollPane = new JScrollPane(table);
-    table.setEnabled(false);
+    DefaultTableModel model = new DefaultTableModel();
+    model.addColumn("Patient Name");
+    model.addColumn("Diagnosis Result");
+    model.addColumn("Status");
+    model.addColumn("Date");
 
+    JTable table = new JTable(model);
+    JScrollPane scrollPane = new JScrollPane(table);
     c.gridy = 3;
-    c.insets = new Insets(0, 50, 0, 50);
     c.weightx = 1.0;
     c.weighty = 1.0;
-    patientPanel.add(tableScrollPane, c);
-    JPanel buttonPanel = new JPanel();
+    c.insets = new Insets(0, 50, 100, 50);
+    patientPanel.add(scrollPane, c);
 
-    buttonPanel.setBackground(new Color(235, 216, 200));
-    c.gridy = 4;
-    c.insets = new Insets(30, 0, 10, 0);
-    c.weightx = 1.0;
-    JButton addButton = new JButton("Add New Medical Record");
+    // Buat Nambahin Row Baru di tabel patient
+    Object[] rowData = {};
 
-    addButton.setFont(new Font("Poppins", Font.BOLD, 18));
-    addButton.setForeground(Color.WHITE);
-    addButton.setBackground(Color.BLACK);
-    addButton.addActionListener(
-      new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          AddRecord addRecord = new AddRecord(table);
-          addRecord.AddRecord();
-        }
-      }
-    );
-    buttonPanel.add(addButton);
     patientPanel.addComponentListener(
       new ComponentAdapter() {
         @Override
@@ -423,11 +442,7 @@ public class DoctorMenu extends javax.swing.JFrame {
           int width = patientPanel.getWidth();
           int height = patientPanel.getHeight();
 
-          float fontSize = 30.0f * Math.min(width, height) / 1000.0f;
-          buttonPanel.setFont(buttonPanel.getFont().deriveFont(fontSize));
-          patientPanel.add(buttonPanel, c);
-
-          fontSize = 45.0f * Math.min(width, height) / 1000.0f;
+          float fontSize = 45.0f * Math.min(width, height) / 1000.0f;
           titleLabel.setFont(titleLabel.getFont().deriveFont(fontSize));
 
           fontSize = 27.0f * Math.min(width, height) / 1000.0f;
