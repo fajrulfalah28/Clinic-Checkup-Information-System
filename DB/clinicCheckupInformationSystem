@@ -153,7 +153,7 @@ use clinic go
 create procedure createRole --CREATE ROLE
 @jobPosition varchar(8)
 as
-insert into person.roles
+insert into person.roles (jobPosition)
 values(@jobPosition)
 go
 
@@ -175,14 +175,14 @@ create procedure createPerson --CREATE PERSON
 @contact2phoneNumber bigint
 as
 insert into person.person(IDCardNumber,roleID,firstName,lastName,dateofBirth,gender,cityAddress,streetAddress,zipCode,email,phoneNumber,contact1Name,contact1phoneNumber,contact2Name,contact2phoneNumber)
-values (@IDCardNumber,@firstName,@lastName,@dateofBirth,@gender,@cityAddress,@streetAddress,@zipCode,@email,@phoneNumber,@contact1Name,@contact1phoneNumber,@contact2Name,@contact2phoneNumber)
+values (@IDCardNumber,@roleID,@firstName,@lastName,@dateofBirth,@gender,@cityAddress,@streetAddress,@zipCode,@email,@phoneNumber,@contact1Name,@contact1phoneNumber,@contact2Name,@contact2phoneNumber)
 go
 
 create procedure createLoginCredential --CREATE LOGIN CREDENTIAL
 @userID bigint,
 @userPassword varchar(20)
 as
-insert into clinic.loginCredential
+insert into clinic.loginCredential(userID,userPassword)
 values (@userID,@userPassword)
 go
 
@@ -288,7 +288,6 @@ where
 userID = @userID AND
 userPassword = @userPassword
 go
-
 
 
 
