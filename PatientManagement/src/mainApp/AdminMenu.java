@@ -15,6 +15,7 @@ import javax.swing.table.TableColumn;
 public class AdminMenu extends javax.swing.JFrame {
 
   private JTabbedPane tabbedPane;
+  public static Object[] user;
 
   public AdminMenu() {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -80,7 +81,7 @@ public class AdminMenu extends javax.swing.JFrame {
     homePanel.setBackground(new Color(235, 216, 200));
     homePanel.setLayout(new GridBagLayout());
 
-    JLabel titleLabel = new JLabel("Welcome Admin Fajrul!", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Welcome Admin " + String.valueOf(user[3]) + " " +String.valueOf(user[4]) + "!", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     GridBagConstraints c = new GridBagConstraints();

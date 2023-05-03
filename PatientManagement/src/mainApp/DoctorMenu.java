@@ -17,6 +17,7 @@ public class DoctorMenu extends javax.swing.JFrame {
   private List<LocalDateTime> dates;
   private JLabel scheduleLabel;
   private JTable table;
+  public static Object[] user;
 
   public DoctorMenu() {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -37,9 +38,10 @@ public class DoctorMenu extends javax.swing.JFrame {
       );
       if (option == JOptionPane.YES_OPTION) {
         JFrame DoctorMenu = (JFrame) SwingUtilities.getWindowAncestor(
-          mainPanel
+        mainPanel
         );
         DoctorMenu.dispose();
+        LoginMenu loginMenu = new LoginMenu();
       }
     });
     logoutButton.setFont(new Font("Poppins", Font.BOLD, 21));
@@ -80,7 +82,7 @@ public class DoctorMenu extends javax.swing.JFrame {
     homePanel.setBackground(new Color(235, 216, 200));
     homePanel.setLayout(new GridBagLayout());
 
-    JLabel titleLabel = new JLabel("Welcome Doctor Fajrul!", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Welcome Doctor " + String.valueOf(user[3]) + " " +String.valueOf(user[4]) + "!", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     GridBagConstraints c = new GridBagConstraints();
@@ -198,7 +200,7 @@ public class DoctorMenu extends javax.swing.JFrame {
     c.anchor = GridBagConstraints.CENTER;
     c.fill = GridBagConstraints.BOTH;
 
-    JLabel titleLabel = new JLabel("Hey doctor Fajrul,", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Hey doctor " + String.valueOf(user[3]) + ",", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     c.gridy = 0;
@@ -365,7 +367,7 @@ public class DoctorMenu extends javax.swing.JFrame {
     c.anchor = GridBagConstraints.CENTER;
     c.fill = GridBagConstraints.BOTH;
 
-    JLabel titleLabel = new JLabel("Hey doctor Fajrul,", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Hey doctor " + String.valueOf(user[3]) + ",", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     c.gridy = 0;

@@ -10,12 +10,13 @@ import java.util.ArrayList;
 
 public class servController {
     //Connection Controller
-    private final static String servUser ="Faun";
-	private final static String servPassword = "Faun1122";
+    private final static String servUser ="toka";
+	private final static String servPassword = "toka123";
 	private final static String servDB = "clinic";
 	private final static String url = "jdbc:sqlserver://localhost;DatabaseName=" + servDB + ";user="+ servUser +";password="+ servPassword+";encrypt=true;trustServerCertificate=true";
     static Connection connect;
-    static String[] resultarray;
+    static Object[] resultarray;
+    static Object[] userTemp;
 
     //Server-Client Connection
     public static void servInit() throws SQLException{
@@ -26,17 +27,32 @@ public class servController {
         // return connect;
     }
     
-    public static String[] getLoginCred(String username, String password) throws SQLException{
-        PreparedStatement stat= connect.prepareStatement("select * from person.logincred where username = ? and userpassword = ?");
-        stat.setString(1, username);
+    public static Object[] getLoginCred(int username, String password) throws SQLException{
+        PreparedStatement stat= connect.prepareStatement("select * from clinic.loginCredential where userID = ? and userPassword = ?");
+        stat.setInt(1, username);
         stat.setString(2, password);
         ResultSet result = stat.executeQuery();
         connect.commit();
-        resultarray = new String[2];
+        resultarray = new Object[2];
         while(result.next()) {      
-            resultarray[0] = result.getString(2);
-            resultarray[1] = result.getString(3);
+            resultarray[0] = result.getObject(1);
+            resultarray[1] = result.getObject(2);
         }
         return resultarray;
      }
+    
+    public static void getUser(int username) throws SQLException {
+    	PreparedStatement stat = connect.prepareStatement("select * from person.person where personID = ?");
+    	stat.setInt(1, username);
+    	ResultSet user = stat.executeQuery();
+    	connect.commit();
+    	userTemp = new Object[16];
+    	while(user.next()) {
+	    	for (int i = 0 ; i < 16 ; i++) {
+	    		userTemp[i] = user.getObject(i+1);
+	    	}
+    	}
+    	DoctorMenu.user = userTemp;
+        AdminMenu.user = userTemp;
+    }
 }

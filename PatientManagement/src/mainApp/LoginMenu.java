@@ -10,7 +10,7 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener {
   JButton signIn;
   JPasswordField passwordField;
   JTextField usernameField;
-  String[] login;
+  Object[] login;
   JFrame frame;
 
   public LoginMenu() {
@@ -64,6 +64,7 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener {
     frame.getContentPane().setBackground(new Color(255, 250, 250));
     frame.add(mainPanel, BorderLayout.CENTER);
     frame.add(topPanel, BorderLayout.NORTH);
+    frame.setVisible(true);
 
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     int centerX = (int) screenSize.getWidth() / 2;
@@ -144,49 +145,61 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener {
     );
 
     // Temporary Login Doctor / Admin
-    signIn.addActionListener(
-      new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          String username = usernameField.getText();
-          String password = passwordField.getText();
+//     signIn.addActionListener(
+//       new ActionListener() {
+//         @Override
+//         public void actionPerformed(ActionEvent e) {
+//           String username = usernameField.getText();
+//           String password = passwordField.getText();
 
-          if (username.equals("doctor") && password.equals("doctor")) {
-            frame.dispose();
-            DoctorMenu doctorMenu = new DoctorMenu();
-          } else if (username.equals("admin") && password.equals("admin")) {
-            frame.dispose();
-            AdminMenu adminMenu = new AdminMenu();
-          } else {
-            JOptionPane.showMessageDialog(
-              frame,
-              "Invalid username or password",
-              "Error",
-              JOptionPane.ERROR_MESSAGE
-            );
-          }
-        }
-      }
-    );
-    frame.setVisible(true);
+//           if (username.equals("doctor") && password.equals("doctor")) {
+//             frame.dispose();
+//             DoctorMenu doctorMenu = new DoctorMenu();
+//           } else if (username.equals("admin") && password.equals("admin")) {
+//             frame.dispose();
+//             AdminMenu adminMenu = new AdminMenu();
+//           } else {
+//             JOptionPane.showMessageDialog(
+//               frame,
+//               "Invalid username or password",
+//               "Error",
+//               JOptionPane.ERROR_MESSAGE
+//             );
+//           }
+//         }
+//       }
+//     );
+//     frame.setVisible(true);
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    if (e.getSource() == signIn) {
-      String user = usernameField.getText();
-      String passwordPlaceholder = String.valueOf(passwordField.getPassword());
-      try {
-        login = servController.getLoginCred(user, passwordPlaceholder);
-      } catch (SQLException e1) {
-        e1.printStackTrace();
+      if (e.getSource() == signIn) {
+          int user = Integer.parseInt(usernameField.getText());
+          String passwordPlaceholder = String.valueOf(passwordField.getPassword());
+          try {
+              login = servController.getLoginCred(user, passwordPlaceholder);
+          } catch (SQLException e1) {
+              e1.printStackTrace();
+          }
+          if ((user == (int)(login[0])) && (passwordPlaceholder.equals(String.valueOf(login[1])))) 
+          {
+                try {
+                    servController.getUser((int)(login[0]));
+                } catch (SQLException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+                if ((int)(DoctorMenu.user[1]) == 1){
+                DoctorMenu docmenu = new DoctorMenu();
+                frame.dispose();
+                } else if ((int)(DoctorMenu.user[1]) == 2){
+                AdminMenu adminmenu = new AdminMenu();
+                frame.dispose();
+                }
+          } else {
+              System.out.println("Check your credentials again");
+          }
       }
-      if ((user.equals(login[0])) && (passwordPlaceholder.equals(login[1]))) {
-        DoctorMenu docmenu = new DoctorMenu();
-        frame.dispose();
-      } else {
-        System.out.println("Check your credentials again");
-      }
-    }
   }
 }
