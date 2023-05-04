@@ -154,19 +154,19 @@ use clinic
 exec createAppointment
 @patientID = 5,
 @employeeID = 3,
-@appointmentDate = '2023/05/04 14:00:00 '
+@appointmentDate = '2023/05/04 14:30:00 '
 go
 
 use Clinic
 exec createHealthRecord
 @patientID = 5,
 @employeeID = 3,
-@systolic = 1000,
-@diastolic = 500,
-@heartRate = 3200,
-@bodyTemperature = 180,
-@bodyheight = 10,
-@bodyWeight = 1200
+@systolic = 121,
+@diastolic = 79,
+@heartRate = 78,
+@bodyTemperature = 38,
+@bodyheight = 181,
+@bodyWeight = 134
 go
 
 use clinic
@@ -205,6 +205,7 @@ go
 select * from person.roles
 select * from person.person
 select * from person.schedule
+select * from clinic.loginCredential
 select * from clinic.appointment
 select * from clinic.healthRecord
 select * from clinic.diagnosis
