@@ -199,11 +199,19 @@ values (@personID,@daySchedule,@startHour,@endHour)
 go
 
 create procedure createLoginCredential --CREATE LOGIN CREDENTIAL
-@userID bigint,
+@userID int,
 @userPassword varchar(20)
 as
 insert into clinic.loginCredential(userID,userPassword)
 values (@userID,@userPassword)
+go
+
+create procedure readLoginCredential --READ LOGIN CREDENTIAL
+@userID int,
+@userPassword varchar(20)
+as
+select * from clinic.loginCredential
+where userID = @userID and userPassword = @userPassword
 go
 
 create procedure readPerson --READ PERSON
@@ -280,6 +288,13 @@ insert into clinic.payment(appointmentID,paymentMethod,chargedAmmount,paymentSta
 values (@appointmentID,@paymentMethod,@chargedAmmount,@paymentStatus)
 go
 
+create procedure deleteLoginCredential --DELETE LOGIN CREDENTIAL
+@userID int
+as
+delete from clinic.loginCredential
+where userID = @userID
+go
+
 create view medicalRecord
 as
 select 
@@ -289,3 +304,12 @@ diagnosis.diagnosisID,'doctorID'=diagnosis.employeeID,diagnosis.diagnosisResult,
 from clinic.healthRecord
 inner join clinic.diagnosis on clinic.healthRecord.patientID = clinic.diagnosis.patientID
 go
+
+create view userIDPolymorph
+as
+select
+person.person.personID,person.person.IDCardNumber,person.person.phoneNumber,clinic.loginCredential.userPassword
+from person.person
+inner join clinic.loginCredential on person.personID = loginCredential.userID
+
+select * from userIDPolymorph
