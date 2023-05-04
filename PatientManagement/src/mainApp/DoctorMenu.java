@@ -2,6 +2,7 @@ package mainApp;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,8 +19,15 @@ public class DoctorMenu extends javax.swing.JFrame {
   private JLabel scheduleLabel;
   private JTable table;
   public static Object[] user;
+  public static Object[][] dataSchedule;
 
   public DoctorMenu() {
+    try {
+        servController.getDataSchedule();
+    } catch (SQLException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     setPreferredSize(screenSize);
     setUndecorated(true);
@@ -82,7 +90,7 @@ public class DoctorMenu extends javax.swing.JFrame {
     homePanel.setBackground(new Color(235, 216, 200));
     homePanel.setLayout(new GridBagLayout());
 
-    JLabel titleLabel = new JLabel("Welcome Doctor " + String.valueOf(user[3]) + " " +String.valueOf(user[4]) + "!", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Welcome Doctor " + String.valueOf(user[3]) + " " + String.valueOf(user[4]) + "!", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     GridBagConstraints c = new GridBagConstraints();
@@ -227,7 +235,7 @@ public class DoctorMenu extends javax.swing.JFrame {
     c.insets = new Insets(0, 0, 30, 0);
     appointmentPanel.add(shiftLabel, c);
 
-    JTable table = new JTable(getData(), getColumnNames());
+    JTable table = new JTable(dataSchedule, getColumnNames());
     JScrollPane tableScrollPane = new JScrollPane(table);
     c.gridy = 3;
     c.insets = new Insets(0, 50, 0, 50);
@@ -318,7 +326,7 @@ public class DoctorMenu extends javax.swing.JFrame {
   }
 
   private String[] getColumnNames() {
-    String[] columnNames = { "Date", "Time", "Patient Name" };
+    String[] columnNames = { "Appointment ID", "Patient ID", "Employee ID", "Appointment Date","Patient Name" };
     return columnNames;
   }
 

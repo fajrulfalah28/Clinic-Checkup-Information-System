@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.naming.spi.DirStateFactory.Result;
+
 public class servController {
     //Connection Controller
     private final static String servUser ="toka";
@@ -17,6 +19,7 @@ public class servController {
     static Connection connect;
     static Object[] resultarray;
     static Object[] userTemp;
+    static Object[][] data;
 
     //Server-Client Connection
     public static void servInit() throws SQLException{
@@ -55,4 +58,23 @@ public class servController {
     	DoctorMenu.user = userTemp;
         AdminMenu.user = userTemp;
     }
+
+    public static void getDataSchedule() throws SQLException {
+        String prep = "select ap.appointmentID , ap.patientID , ap.employeeID , ap.appointmentDate, p.firstName + ' ' + p.lastName  from clinic.appointment as ap inner join person.person as p on (ap.patientID = p.personID)";
+        PreparedStatement stat = connect.prepareStatement(prep, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet result = stat.executeQuery();
+        connect.commit();
+        result.last();
+        int rowcount = result.getRow();
+        result.beforeFirst();
+        data = new Object[rowcount][5];
+        while(result.next()) {
+	    	for (int i = 0 ; i < rowcount ; i++) {
+                for(int j = 0 ; j < 5 ; j++){
+	    		    data[i][j] = result.getObject(j+1);
+                }
+	    	}
+    	}
+        DoctorMenu.dataSchedule = data;
+      }
 }
