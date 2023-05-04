@@ -27,6 +27,7 @@ go
 use clinic
 exec ('create schema person')
 exec ('create schema clinic')
+go
 
 
 
@@ -40,6 +41,7 @@ roleID int constraint PKjobID primary key identity(1,1) not null,
 jobPosition varchar(8) unique not null,
 dateModified dateTime default getDate() not null
 )
+go
 
 create table person.person --PERSON
 (
@@ -61,6 +63,7 @@ contact2Name varchar(20),
 contact2phoneNumber bigInt,
 dateModified dateTime default getDate() not null
 )
+go
 
 create table clinic.loginCredential -- LOGIN CREDENTIAL
 (
@@ -68,6 +71,7 @@ userID int constraint loginCredentialFKpersonID foreign key(userID) references p
 userPassword varchar(20) unique not null,
 accountStatus varchar(20) default 'active'
 )
+go
 
 create table person.schedule --SCHEDULE
 (
@@ -78,6 +82,7 @@ startHour time not null,
 endHour time not null,
 dateModified dateTime default getDate() not null
 )
+go
 
 create table clinic.appointment --APPOINTMENT
 (
@@ -88,6 +93,7 @@ appointmentDate dateTime unique not null,
 appointmentStatus varchar(10) default 'In Queue' not null,
 dateModified dateTime default getDate() not null
 )
+go
 
 create table clinic.healthRecord --HEALTH RECORD
 (
@@ -102,6 +108,7 @@ bodyheight int not null,
 bodyWeight int not null,
 dateModified dateTime default getDate() not null
 )
+go
 
 create table clinic.diagnosis --DIAGNOSIS
 (
@@ -112,6 +119,7 @@ diagnosisResult varchar (100),
 actionStatus varchar(20),
 dateModified dateTime default getDate() not null
 )
+go
 
 create table clinic.prescription --PRESCRIPTION
 (
@@ -123,6 +131,7 @@ medicineQTY int not null,
 medicationDosage varchar(40) not null,
 dateModified dateTime default getDate() not null
 )
+go
 
 create table clinic.referral --REFERRAL
 (
@@ -133,6 +142,7 @@ medicalSpecialties varchar(20) not null,
 referralTime dateTime unique not null,
 dateModified dateTime default getDate() not null
 )
+go
 
 create table clinic.payment --PAYMENT
 (
@@ -143,6 +153,7 @@ chargedAmmount int not null,
 paymentStatus varchar(10) not null,
 dateModified dateTime default getDate() not null
 )
+go
 
 
 
@@ -175,6 +186,16 @@ create procedure createPerson --CREATE PERSON
 as
 insert into person.person(IDCardNumber,roleID,firstName,lastName,dateofBirth,gender,cityAddress,streetAddress,zipCode,email,phoneNumber,contact1Name,contact1phoneNumber,contact2Name,contact2phoneNumber)
 values (@IDCardNumber,@roleID,@firstName,@lastName,@dateofBirth,@gender,@cityAddress,@streetAddress,@zipCode,@email,@phoneNumber,@contact1Name,@contact1phoneNumber,@contact2Name,@contact2phoneNumber)
+go
+
+create procedure createSchedule --CREATE SCHEDULE
+@personID int,
+@daySchedule varchar(10),
+@startHour time,
+@endHour time
+as
+insert into person.schedule(personID,daySchedule,startHour,endHour)
+values (@personID,@daySchedule,@startHour,@endHour)
 go
 
 create procedure createLoginCredential --CREATE LOGIN CREDENTIAL
@@ -257,4 +278,14 @@ create procedure createPayment --CREATE PAYMENT
 as
 insert into clinic.payment(appointmentID,paymentMethod,chargedAmmount,paymentStatus)
 values (@appointmentID,@paymentMethod,@chargedAmmount,@paymentStatus)
+go
+
+create view medicalRecord
+as
+select 
+healthRecord.MRID,healthRecord.patientID,'nurseID'=healthRecord.employeeID,healthRecord.systolic,healthRecord.diastolic,
+healthRecord.heartRate,healthRecord.bodyTemperature,healthRecord.bodyheight,healthRecord.bodyWeight,
+diagnosis.diagnosisID,'doctorID'=diagnosis.employeeID,diagnosis.diagnosisResult,diagnosis.actionStatus
+from clinic.healthRecord
+inner join clinic.diagnosis on clinic.healthRecord.patientID = clinic.diagnosis.patientID
 go
