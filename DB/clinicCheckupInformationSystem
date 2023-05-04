@@ -24,27 +24,27 @@ go
 
 
 --CREATE SCHEMA
-use clinic go
-create schema person go
-create schema clinic go
+use clinic
+exec ('create schema person')
+exec ('create schema clinic')
 
 
 
 
 
 --CREATE TABLE
-use clinic go
+use clinic
 create table person.roles --ROLES
 (
 roleID int constraint PKjobID primary key identity(1,1) not null,
-jobPosition varchar(8) not null,
+jobPosition varchar(8) unique not null,
 dateModified dateTime default getDate() not null
 )
 
 create table person.person --PERSON
 (
 personID int constraint PKpersonID primary key identity(1,1) not null,
-roleID int,
+roleID int constraint personFKroleID foreign key(roleID) references person.roles(roleID),
 IDCardNumber bigint unique not null,
 firstName varchar(20) not null,
 lastName varchar(20) default '' not null,
@@ -62,6 +62,13 @@ contact2phoneNumber bigInt,
 dateModified dateTime default getDate() not null
 )
 
+create table clinic.loginCredential -- LOGIN CREDENTIAL
+(
+userID int constraint loginCredentialFKpersonID foreign key(userID) references person.person(personID) unique not null,
+userPassword varchar(20) unique not null,
+accountStatus varchar(20) default 'active'
+)
+
 create table person.schedule --SCHEDULE
 (
 scheduleID int constraint PKscheduleID primary Key identity(1,1) not null,
@@ -72,19 +79,12 @@ endHour time not null,
 dateModified dateTime default getDate() not null
 )
 
-create table clinic.loginCredential -- LOGIN CREDENTIAL
-(
-userID int constraint loginCredentialFKpersonID foreign key(userID) references person.person(personID) not null,
-userPassword varchar(20) not null,
-accountStatus varchar(20) default 'active'
-)
-
 create table clinic.appointment --APPOINTMENT
 (
 appointmentID int constraint PKappointmentID primary key identity(1,1) not null,
 patientID int constraint appointmentFKpatientID foreign key(patientID) references person.person(personID) not null,
 employeeID int constraint appointmentFKemployeeID foreign key(employeeID) references person.person(personID) not null,
-appointmentDate dateTime not null,
+appointmentDate dateTime unique not null,
 appointmentStatus varchar(10) default 'In Queue' not null,
 dateModified dateTime default getDate() not null
 )
@@ -130,7 +130,7 @@ referralID int constraint PKreferralID primary key identity(1,1) not null,
 diagnosisID int constraint referralFKdiagnosisID foreign key(diagnosisID) references clinic.diagnosis(diagnosisID) not null,
 hospitalName varchar(20) not null,
 medicalSpecialties varchar(20) not null,
-referralTime dateTime not null,
+referralTime dateTime unique not null,
 dateModified dateTime default getDate() not null
 )
 
@@ -149,7 +149,6 @@ dateModified dateTime default getDate() not null
 
 
 --CREATE PROCEDURE
-use clinic go
 create procedure createRole --CREATE ROLE
 @jobPosition varchar(8)
 as
@@ -199,11 +198,10 @@ go
 create procedure createAppointment --CREATE APPOINTMENT
 @patientID int,
 @employeeID int,
-@appointmentDate dateTime,
-@appointmentStatus varchar(10)
+@appointmentDate dateTime
 as
-insert into clinic.appointment (patientID,employeeID,appointmentStatus,appointmentDate)
-values (@patientID,@employeeID,@appointmentDate,@appointmentStatus)
+insert into clinic.appointment (patientID,employeeID,appointmentDate)
+values (@patientID,@employeeID,@appointmentDate)
 go
 
 create procedure createHealthRecord --CREATE HEALTH RECORD
@@ -260,36 +258,3 @@ as
 insert into clinic.payment(appointmentID,paymentMethod,chargedAmmount,paymentStatus)
 values (@appointmentID,@paymentMethod,@chargedAmmount,@paymentStatus)
 go
-
-/*
-create procedure updatePersonPhoneNumber --UPDATE PERSON
-@userID bigint,
-@newPhoneNumber bigint
-as
-update person.person
-set phoneNumber = @newPhoneNumber
-where
-person.person.personID = convert(@userID,int) OR 
-person.person.IDCardNumber = convert OR
-person.person.phoneNumber = convert
-go
-
-create procedure updateLoginCredential --UPDATE LOGIN CREDENTIAL
-@userID bigint,
-@userPassword varchar(20),
-@newUserID bigint,
-@newUserPassword varchar(20)
-as
-update clinic.loginCredential
-set 
-userID = @newUserID,
-userPassword = @newUserPassword
-where
-userID = @userID AND
-userPassword = @userPassword
-go
-
-
-
-
---CREATE TRIGGER
