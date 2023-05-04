@@ -1,27 +1,27 @@
 use clinic
 exec createRole
 @jobPosition = 'Admin'
-select * from person.roles
+go
 
 use clinic
 exec createRole
 @jobPosition = 'Doctor'
-select * from person.roles
+go
 
 use clinic
 exec createRole
 @jobPosition = 'Nurse'
-select * from person.roles
+go
 
 use clinic
 exec createRole
 @jobPosition = 'Cashier'
-select * from person.roles
+go
 
 use clinic
 exec createRole
 @jobPosition = 'Patient'
-select * from person.roles
+go
 
 use clinic
 exec createPerson
@@ -40,7 +40,7 @@ exec createPerson
 @contact1phoneNumber = 086381727489,
 @contact2Name = 'MRs. admin1',
 @contact2phoneNumber = 086274894058
-select * from person.person
+go
 
 use clinic
 exec createPerson
@@ -59,7 +59,7 @@ exec createPerson
 @contact1phoneNumber = 086381784719,
 @contact2Name = 'MRs. doctor1',
 @contact2phoneNumber = 086274809274
-select * from person.person
+go
 
 use clinic
 exec createPerson
@@ -78,7 +78,7 @@ exec createPerson
 @contact1phoneNumber = 086381747285,
 @contact2Name = 'MRs. nurse1',
 @contact2phoneNumber = 086274872622
-select * from person.person
+go
 
 use clinic
 exec createPerson
@@ -97,7 +97,7 @@ exec createPerson
 @contact1phoneNumber = 086381755718,
 @contact2Name = 'MRs. cashier1',
 @contact2phoneNumber = 086274811847
-select * from person.person
+go
 
 use clinic
 exec createPerson
@@ -116,38 +116,46 @@ exec createPerson
 @contact1phoneNumber = 086381781947,
 @contact2Name = 'MRs. patient1',
 @contact2phoneNumber = 086274890817
-select * from person.person
+go
+
+use clinic
+exec createSchedule
+@personID = 2,
+@daySchedule = 'Monday',
+@startHour = '06:00:00',
+@endHour = '12:00:00'
+go
 
 use clinic
 exec createLoginCredential
 @userID = 1,
 @userPassword = 'admin1_'
-select * from clinic.loginCredential
+go
 
 use clinic
 exec createLoginCredential
 @userID = 2,
 @userPassword = 'doctor1_'
-select * from clinic.loginCredential
+go
 
 use clinic
 exec createLoginCredential
 @userID = 3,
 @userPassword = 'nurse1_'
-select * from clinic.loginCredential
+go
 
 use clinic
 exec createLoginCredential
 @userID = 4,
 @userPassword = 'cashier1_'
-select * from clinic.loginCredential
+go
 
 use clinic
 exec createAppointment
 @patientID = 5,
 @employeeID = 3,
 @appointmentDate = '2023/05/04 14:00:00 '
-select * from clinic.appointment
+go
 
 use Clinic
 exec createHealthRecord
@@ -159,7 +167,7 @@ exec createHealthRecord
 @bodyTemperature = 180,
 @bodyheight = 10,
 @bodyWeight = 1200
-select * from clinic.healthRecord
+go
 
 use clinic
 exec createDiagnosis
@@ -167,7 +175,7 @@ exec createDiagnosis
 @employeeID = 2,
 @diagnosisResult = 'thou shalt not eat sugar',
 @actionStatus = 'prescript'
-select * from clinic.diagnosis
+go
 
 use clinic
 exec createPrescription
@@ -176,7 +184,7 @@ exec createPrescription
 @medicineName = 'med',
 @medicineQTY = 12,
 @medicationDosage = '2 tablet per day for 6 day'
-select * from clinic.prescription
+go
 
 use clinic
 exec createReferral
@@ -184,7 +192,7 @@ exec createReferral
 @hospitalName = 'd hospital',
 @medicalSpecialties = 'bones',
 @referralTime = '2023/05/04 18:00:00'
-select * from clinic.referral
+go
 
 use clinic
 exec createPayment
@@ -192,4 +200,14 @@ exec createPayment
 @paymentMethod = 'Insurance',
 @chargedAmmount = 2000,
 @paymentStatus = 'Paid'
+go
+
+select * from person.roles
+select * from person.person
+select * from person.schedule
+select * from clinic.appointment
+select * from clinic.healthRecord
+select * from clinic.diagnosis
+select * from clinic.prescription
+select * from clinic.referral
 select * from clinic.payment
