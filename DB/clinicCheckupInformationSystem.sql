@@ -199,7 +199,7 @@ values (@personID,@daySchedule,@startHour,@endHour)
 go
 
 create procedure createLoginCredential --CREATE LOGIN CREDENTIAL
-@userID int,
+@userID bigint,
 @userPassword varchar(20)
 as
 insert into clinic.loginCredential(userID,userPassword)
@@ -207,7 +207,7 @@ values (@userID,@userPassword)
 go
 
 create procedure readLoginCredential --READ LOGIN CREDENTIAL
-@userID int,
+@userID bigint,
 @userPassword varchar(20)
 as
 select * from clinic.loginCredential
@@ -295,7 +295,77 @@ delete from clinic.loginCredential
 where userID = @userID
 go
 
-create view medicalRecord
+create procedure updatePerson -- UPDATE PERSON
+@userID bigint,
+@IDCardNumber bigint,
+@roleID int,
+@firstName varchar(20),
+@lastName varchar(20),
+@dateofBirth date,
+@gender varchar(1),
+@cityAddress varchar(20),
+@streetAddress varchar(20),
+@zipCode int,
+@email varchar(20),
+@phoneNumber bigint,
+@contact1Name varchar(20),
+@contact1phoneNumber bigint,
+@contact2Name varchar(20),
+@contact2phoneNumber bigint
+as
+update person.person
+set
+IDCardNumber = @IDCardNumber,
+roleID = @roleID,
+firstName = @firstName,
+lastName = @lastName,
+dateofBirth = @dateofBirth,
+gender = @gender,
+cityAddress = @cityAddress,
+streetAddress = @streetAddress,
+zipCode = @zipCode,
+email = @email,
+phoneNumber = @phoneNumber,
+contact1Name = @contact1Name,
+contact1phoneNumber = @contact1phoneNumber,
+contact2Name = @contact2Name,
+contact2phoneNumber = @contact2phoneNumber
+where @userID in (personID,IDCardNumber,phoneNumber)
+go
+
+create procedure updateSchedule--UPDATE SCHEDULE
+@scheduleID int,
+@personID int,
+@daySchedule varchar(10),
+@startHour time,
+@endHour time
+as
+update person.schedule
+set
+personID = @personID,
+daySchedule = @daySchedule,
+startHour = @daySchedule,
+endHour = @endHour
+where scheduleID = @scheduleID
+go
+
+create procedure updateDiagnosis--UPDATE DIAGNOSIS
+@diagnosisID int,
+@patientID int,
+@employeeID int,
+@diagnosisResult varchar (100),
+@actionStatus varchar(20)
+as
+update clinic.diagnosis
+set
+patientID = @patientID,
+employeeID = @employeeID,
+diagnosisResult = @diagnosisResult,
+actionStatus = @actionStatus
+where diagnosisID = @diagnosisID
+go
+
+create view medicalRecord --MEDICAL RECORD VIEW
 as
 select 
 healthRecord.MRID,healthRecord.patientID,'nurseID'=healthRecord.employeeID,healthRecord.systolic,healthRecord.diastolic,
@@ -305,11 +375,10 @@ from clinic.healthRecord
 inner join clinic.diagnosis on clinic.healthRecord.patientID = clinic.diagnosis.patientID
 go
 
-create view userIDPolymorph
+create view userIDPolymorph --POLYMORPH USER ID VIEW
 as
 select
 person.person.personID,person.person.IDCardNumber,person.person.phoneNumber,clinic.loginCredential.userPassword
 from person.person
 inner join clinic.loginCredential on person.personID = loginCredential.userID
-
-select * from userIDPolymorph
+go
