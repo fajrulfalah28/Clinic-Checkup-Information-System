@@ -38,12 +38,14 @@ class EditPatientFrame extends JFrame {
     this.row = row;
     this.table = table;
     setTitle("Edit Patient");
-    setSize(800, 500);
+    setSize(500, 500);
     setLocationRelativeTo(null);
     setResizable(false);
     setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
     Font poppinsBold = new Font("Poppins", Font.BOLD, 14);
+    Font poppinsPlain = new Font("Poppins", Font.PLAIN, 14);
+
 
     JPanel panel = new JPanel(new GridBagLayout());
     GridBagConstraints c = new GridBagConstraints();
@@ -128,26 +130,12 @@ class EditPatientFrame extends JFrame {
     panel.add(doctorLabel, c);
 
     c.gridx = 1;
-    doctorPanel = new JPanel();
-    doctorPanel.setLayout(new BoxLayout(doctorPanel, BoxLayout.Y_AXIS)); 
-    JRadioButton andiRadioButton = new JRadioButton("Andi");
-    JRadioButton budiRadioButton = new JRadioButton("Budi");
-    JRadioButton rusdiRadioButton = new JRadioButton("Rusdi");
-    ButtonGroup doctorButtonGroup = new ButtonGroup();
-    doctorButtonGroup.add(andiRadioButton);
-    doctorButtonGroup.add(budiRadioButton);
-    doctorButtonGroup.add(rusdiRadioButton);
-    if (Doctor.toString().equals("1")) {
-      andiRadioButton.setSelected(true);
-    } else if (Doctor.toString().equals("2")) {
-      budiRadioButton.setSelected(true);
-    } else if (Doctor.toString().equals("3")) {
-      rusdiRadioButton.setSelected(true);
-    }
-    doctorPanel.add(andiRadioButton);
-    doctorPanel.add(budiRadioButton);
-    doctorPanel.add(rusdiRadioButton);
-    panel.add(doctorPanel, c);
+    c.insets = new Insets(10, 5, 10, 10);
+    String[] doctorOptions = new String[] {"Andi", "Budi", "Rusdi"};
+    JComboBox<String> doctorComboBox = new JComboBox<>(doctorOptions);
+    doctorComboBox.setSelectedItem(Doctor.toString());
+    doctorComboBox.setFont(poppinsPlain);
+    panel.add(doctorComboBox, c);
 
     c.gridx = 0;
     c.gridy = 9;
@@ -169,16 +157,7 @@ class EditPatientFrame extends JFrame {
           String newHeartRate = heartRateField.getText();
           String newBodyTemp = bodyTempField.getText();
           String newBodyHeight = bodyHeightField.getText();
-          String newDoctor = "";
-          if (andiRadioButton.isSelected()) {
-            newDoctor = "Andi";
-            //edit di database juga buat id docternya
-          } else if (budiRadioButton.isSelected()) {
-            newDoctor = "Budi";
-            //edit di database juga buat id docternya
-          } else if (rusdiRadioButton.isSelected()) {
-            newDoctor = "Rusdi";
-          }
+          String newDoctor = doctorComboBox.getSelectedItem().toString();
           table.setValueAt(newPatientName, row, 1);
           table.setValueAt(newNurseName, row, 2);
           table.setValueAt(newSystolic, row, 3);
@@ -191,6 +170,7 @@ class EditPatientFrame extends JFrame {
         }
       }
     );
+
     panel.add(saveButton, c);
 
     add(panel);
