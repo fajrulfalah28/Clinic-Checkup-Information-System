@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 
 import javax.naming.spi.DirStateFactory.Result;
@@ -27,6 +28,7 @@ public class servController {
     static String[] MedRecordColumn;
     static Object[][] Credentials;
     static String[] credColumn;
+    static int[] servDoctorID;
 
     //Server-Client Connection
     public static void servInit() throws SQLException{
@@ -148,7 +150,7 @@ public class servController {
     }
 
     public static void getAllDoctor() throws SQLException{
-        String prep = "select firstName + ' '+ lastName as 'Doctor Name' from person.person where roleID = 2";
+        String prep = "select personID , firstName + ' '+ lastName as 'Doctor Name' from person.person where roleID = 2";
         PreparedStatement stat = connect.prepareStatement(prep, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         ResultSet result = stat.executeQuery();
         connect.commit();
@@ -156,11 +158,14 @@ public class servController {
         int rowcount = result.getRow();
         result.beforeFirst();
         doctors = new String[rowcount];
+        servDoctorID = new int[rowcount];
         int i = 0;
         while(result.next()) {
-            doctors[i] = result.getString(i+1);
+            doctors[i] = result.getString(2);
+            servDoctorID[i] = result.getInt(1);
         i++;
         }
+        EditAppointmentFrame.servDoctorID = servDoctorID;
         EditAppointmentFrame.doctors = doctors;
     }
 
@@ -212,5 +217,15 @@ public class servController {
     	}
         AdminMenu.Credentials = Credentials;
         AdminMenu.credColumn = credColumn;
+    }
+
+    public static void servAppointmentUpdate(int employee, String date, int id) throws SQLException{
+        String prep = "update clinic.appointment set employeeID = ?, appointmentDate = ? where appointmentID = ?";
+        PreparedStatement stmt = connect.prepareStatement(prep);
+        stmt.setInt(1, employee);
+        stmt.setString(2, date);
+        stmt.setInt(3, id);
+        stmt.execute();
+        connect.commit();
     }
 }

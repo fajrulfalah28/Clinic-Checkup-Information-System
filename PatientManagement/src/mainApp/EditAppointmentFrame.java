@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.Arrays;
+
 import javax.swing.*;
 
 class EditAppointmentFrame extends JFrame {
@@ -18,9 +21,12 @@ class EditAppointmentFrame extends JFrame {
   private int row;
   private JTable table; // declare table as an instance variable
   public static String[] doctors;
+  public static int doctorId;
+  public static int[] servDoctorID;
   
 
   public EditAppointmentFrame(
+    int Id,
     Object date,
     Object time,
     Object patientName,
@@ -199,8 +205,10 @@ class EditAppointmentFrame extends JFrame {
           newDate =  String.valueOf(yearComboBox.getSelectedItem()) + "-" + String.valueOf(monthComboBox.getSelectedItem()) + "-0" + String.valueOf(dayComboBox.getSelectedItem());
           }
           String newTime = timeComboBox.getSelectedItem().toString();
+          String newDateTime = newDate + " " + newTime;
           String newPatientName = patientNameField.getText();
           String newDoctor = String.valueOf(DoctorComboBox.getSelectedItem());
+          doctorId = DoctorComboBox.getSelectedIndex();
           // if (andiRadioButton.isSelected()) {
           //   newDoctor = "Andi";
           //   //edit di database juga buat id docternya
@@ -215,6 +223,14 @@ class EditAppointmentFrame extends JFrame {
           table.setValueAt(newTime, row, 4);
           table.setValueAt(newPatientName, row, 2);
           table.setValueAt(newDoctor, row, 1);
+          System.out.println(doctorId);
+          try {
+            
+            servController.servAppointmentUpdate(servDoctorID[doctorId], newDateTime, Id );
+          } catch (SQLException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+          }
           dispose();
         }
       }

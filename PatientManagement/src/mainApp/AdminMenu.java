@@ -297,11 +297,13 @@ public class AdminMenu extends javax.swing.JFrame {
           } else {
             int row = table.getSelectedRow();
             int column = table.getSelectedColumn();
+            int Id = (int)table.getValueAt(row, 0);
             Object date = table.getValueAt(row, 3);
             Object time = table.getValueAt(row, 4);
             Object patientName = table.getValueAt(row, 2);
             Object doctor = table.getValueAt(row, 1);
             EditAppointmentFrame editFrame = new EditAppointmentFrame(
+              Id,
               date,
               time,
               patientName,
