@@ -3,16 +3,11 @@ package mainApp;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
+
 import javax.swing.*;
 
-public class LoginMenu extends javax.swing.JFrame implements ActionListener {
-
-  JButton signIn;
-  JPasswordField passwordField;
-  JTextField usernameField;
-  Object[] login;
-  JFrame frame;
-
+public class LoginMenu extends javax.swing.JFrame {
+static Object[] login;
   public LoginMenu() {
     JPanel mainPanel = new JPanel();
     mainPanel.setBackground(new Color(235, 216, 200));
@@ -34,16 +29,15 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener {
 
     JLabel usernameLabel = new JLabel("Username:");
     usernameLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
-    usernameField = new JTextField(24);
+    JTextField usernameField = new JTextField(24);
 
     JLabel passwordLabel = new JLabel("Password:");
     passwordLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
-    passwordField = new JPasswordField(12);
+    JPasswordField passwordField = new JPasswordField(12);
 
-    signIn = new JButton("Log In");
+    JButton signIn = new JButton("Log In");
     signIn.setBackground(Color.BLACK);
     signIn.setForeground(Color.WHITE);
-    signIn.addActionListener(this);
 
     JPanel buttonPanel = new JPanel(new FlowLayout());
     buttonPanel.setBackground(mainPanel.getBackground());
@@ -57,14 +51,13 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener {
     c.anchor = GridBagConstraints.CENTER;
     c.fill = GridBagConstraints.BOTH;
 
-    frame = new JFrame();
+    JFrame frame = new JFrame();
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setSize(1920, 1080);
     frame.setLayout(new BorderLayout());
     frame.getContentPane().setBackground(new Color(255, 250, 250));
     frame.add(mainPanel, BorderLayout.CENTER);
     frame.add(topPanel, BorderLayout.NORTH);
-    frame.setVisible(true);
 
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     int centerX = (int) screenSize.getWidth() / 2;
@@ -144,62 +137,48 @@ public class LoginMenu extends javax.swing.JFrame implements ActionListener {
       }
     );
 
-    // Temporary Login Doctor / Admin
-//     signIn.addActionListener(
-//       new ActionListener() {
-//         @Override
-//         public void actionPerformed(ActionEvent e) {
-//           String username = usernameField.getText();
-//           String password = passwordField.getText();
-
-//           if (username.equals("doctor") && password.equals("doctor")) {
-//             frame.dispose();
-//             DoctorMenu doctorMenu = new DoctorMenu();
-//           } else if (username.equals("admin") && password.equals("admin")) {
-//             frame.dispose();
-//             AdminMenu adminMenu = new AdminMenu();
-//           } else {
-//             JOptionPane.showMessageDialog(
-//               frame,
-//               "Invalid username or password",
-//               "Error",
-//               JOptionPane.ERROR_MESSAGE
-//             );
-//           }
-//         }
-//       }
-//     );
-//     frame.setVisible(true);
-  }
-
-  @Override
-  public void actionPerformed(ActionEvent e) {
-      if (e.getSource() == signIn) {
-          int user = Integer.parseInt(usernameField.getText());
-          String passwordPlaceholder = String.valueOf(passwordField.getPassword());
-          try {
-              login = servController.getLoginCred(user, passwordPlaceholder);
-          } catch (SQLException e1) {
-              e1.printStackTrace();
-          }
-          if ((user == (int)(login[0])) && (passwordPlaceholder.equals(String.valueOf(login[1])))) 
-          {
-                try {
-                    servController.getUser((int)(login[0]));
-                } catch (SQLException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
-                if ((int)(DoctorMenu.user[1]) == 1){
-                DoctorMenu docmenu = new DoctorMenu();
-                frame.dispose();
-                } else if ((int)(DoctorMenu.user[1]) == 2){
-                AdminMenu adminmenu = new AdminMenu();
-                frame.dispose();
-                }
-          } else {
-              System.out.println("Check your credentials again");
-          }
+    signIn.addActionListener(
+      new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int user = Integer.parseInt(usernameField.getText());
+            String passwordPlaceholder = String.valueOf(passwordField.getPassword());
+            try {
+                login = servController.getLoginCred(user, passwordPlaceholder);
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+            if ((login[0] != null) && (login[1] != null)){
+                if ((user == (int)(login[0])) && (passwordPlaceholder.equals(String.valueOf(login[1])))) 
+                {
+                      try {
+                          servController.getUser((int)(login[0]));
+                      } catch (SQLException e1) {
+                          // TODO Auto-generated catch block
+                          e1.printStackTrace();
+                      }
+                      if ((int)(DoctorMenu.user[1]) == 2){
+                      DoctorMenu docmenu = new DoctorMenu();
+                      frame.dispose();
+                      } else if ((int)(DoctorMenu.user[1]) == 1){
+                      AdminMenu adminmenu = new AdminMenu();
+                      frame.dispose();
+                      }
+                } 
+            } else {
+                    
+                JOptionPane.showMessageDialog(
+                    frame,
+                    "Invalid username or password",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            }
+            
+        }
       }
+    );
+
+    frame.setVisible(true);
   }
 }

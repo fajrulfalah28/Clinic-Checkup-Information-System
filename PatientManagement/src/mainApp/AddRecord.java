@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 
 public class AddRecord extends JFrame {
 
@@ -120,4 +119,5 @@ public class AddRecord extends JFrame {
 
     setContentPane(contentPane);
   }
+
 }
