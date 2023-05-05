@@ -18,10 +18,16 @@ public class AdminMenu extends javax.swing.JFrame {
   public static String[] dataColumnName;
   public static Object[][] DiagnosisTable;
   public static String[] diagnosisColumn;
+  public static Object[][] MedicalRecord;
+  public static String[] MedRecordColumn;
+  public static Object[][] Credentials;
+  public static String[] credColumn;
 
   public AdminMenu() {
     try {
       servController.getDataScheduleAdmin();
+      servController.getMedRecord();
+      servController.getCred();
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -370,23 +376,8 @@ public class AdminMenu extends javax.swing.JFrame {
     c.insets = new Insets(0, 0, 50, 0);
     patientPanel.add(chooseLabel, c);
 
-    String[] columnNames = {
-      "MRID",
-      "Patient",
-      "Nurse",
-      "Systolic",
-      "Diastolic",
-      "Heart Rate",
-      "Body Temperature",
-      "Body Height",
-      "Diagnosis ID",
-      "Doctor",
-      "Diagnosis Result",
-      "Action Status"
-    };
-    Object[][] data = {
-      {"1", "Budi", "Aisyah", 1, 1, 1, 1.0, 1, "D-123", "Rusdi", null, null}
-    };
+    String[] columnNames = MedRecordColumn;
+    Object[][] data = MedicalRecord;
 
     DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
     JTable table = new JTable(tableModel);
@@ -511,14 +502,8 @@ public class AdminMenu extends javax.swing.JFrame {
     c.insets = new Insets(0, 0, 50, 0);
     doctorPanel.add(chooseLabel, c);
 
-    String[] columnNames = {
-      "userID", "userPassword",
-    };
-    Object[][] data = {
-      {1, "admin1_"},
-      {2, "doctor1_"},
-      {3, "nurse1_"}
-    };
+    String[] columnNames = credColumn;
+    Object[][] data = Credentials;
 
     DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
     JTable table = new JTable(tableModel);

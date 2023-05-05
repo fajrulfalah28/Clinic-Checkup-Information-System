@@ -23,6 +23,10 @@ public class servController {
     static Object[][] data;
     static String[] columnname;
     static String[] doctors;
+    static Object[][] MedicalRecord;
+    static String[] MedRecordColumn;
+    static Object[][] Credentials;
+    static String[] credColumn;
 
     //Server-Client Connection
     public static void servInit() throws SQLException{
@@ -151,12 +155,62 @@ public class servController {
         result.last();
         int rowcount = result.getRow();
         result.beforeFirst();
-        doctors=new String[rowcount];
+        doctors = new String[rowcount];
         int i = 0;
         while(result.next()) {
             doctors[i] = result.getString(i+1);
         i++;
         }
         EditAppointmentFrame.doctors = doctors;
+    }
+
+    public static void getMedRecord() throws SQLException{
+        String prep = "select * from dbo.medicalRecord";
+        PreparedStatement stat = connect.prepareStatement(prep, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet result = stat.executeQuery();
+        ResultSetMetaData rsmd = result.getMetaData();
+        MedRecordColumn = new String[13];
+        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+            MedRecordColumn[i-1] = rsmd.getColumnName(i);
+        }
+        connect.commit();
+        result.last();
+        int rowcount = result.getRow();
+        result.beforeFirst();
+        MedicalRecord = new Object[rowcount][13];
+        int i = 0;
+        while(result.next()) {
+                for(int j = 0 ; j < 13 ; j++){
+	    		    MedicalRecord[i][j] = result.getObject(j+1);
+                }
+	    	i++;
+    	}
+        AdminMenu.MedRecordColumn = MedRecordColumn;
+        AdminMenu.MedicalRecord = MedicalRecord;
+    }
+
+    public static void getCred() throws SQLException{
+        String prep = "select userID as 'ID user', userPassword as 'Password' from clinic.loginCredential";
+        PreparedStatement stat = connect.prepareStatement(prep, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet result = stat.executeQuery();
+        ResultSetMetaData rsmd = result.getMetaData();
+        credColumn = new String[2];
+        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+            credColumn[i-1] = rsmd.getColumnName(i);
+        }
+        connect.commit();
+        result.last();
+        int rowcount = result.getRow();
+        result.beforeFirst();
+        Credentials = new Object[rowcount][2];
+        int i = 0;
+        while(result.next()) {
+                for(int j = 0 ; j < 2 ; j++){
+	    		    Credentials[i][j] = result.getObject(j+1);
+                }
+	    	i++;
+    	}
+        AdminMenu.Credentials = Credentials;
+        AdminMenu.credColumn = credColumn;
     }
 }
