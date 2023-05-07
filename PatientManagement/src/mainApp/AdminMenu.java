@@ -2,36 +2,23 @@ package mainApp;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.SQLException;
-import java.util.List;
+import java.math.BigInteger;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 
 public class AdminMenu extends javax.swing.JFrame {
 
   private JTabbedPane tabbedPane;
   private JTable table;
-  static Object[] user;
-  public static Object[][] dataSchedule;
-  public static String[] dataColumnName;
-  public static Object[][] DiagnosisTable;
-  public static String[] diagnosisColumn;
-  public static Object[][] MedicalRecord;
-  public static String[] MedRecordColumn;
-  public static Object[][] Credentials;
-  public static String[] credColumn;
+  private JComboBox<String> monthComboBox;
+  private JComboBox<Integer> dayComboBox;
+  private JComboBox<Integer> yearComboBox;
+  private JComboBox<String> timeComboBox;
+  private JTextField patientNameField;
+  private JPanel doctorPanel;
+  private DefaultTableModel tableModel;
 
   public AdminMenu() {
-    try {
-      servController.getDataScheduleAdmin();
-      servController.getMedRecord();
-      servController.getCred();
-    } catch (SQLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     setPreferredSize(screenSize);
     setUndecorated(true);
@@ -72,11 +59,13 @@ public class AdminMenu extends javax.swing.JFrame {
     tabbedPane.addTab("Edit Appointment", createEditAppointmentPanel());
     tabbedPane.addTab("Edit Patient", createPatientPanel());
     tabbedPane.addTab("Edit Account", createDoctorPanel());
+    tabbedPane.addTab("Add Patient", createAddPatient());
     tabbedPane.setBackground(Color.BLACK);
     tabbedPane.setForegroundAt(0, Color.WHITE);
     tabbedPane.setForegroundAt(1, Color.WHITE);
     tabbedPane.setForegroundAt(2, Color.WHITE);
     tabbedPane.setForegroundAt(3, Color.WHITE);
+    tabbedPane.setForegroundAt(4, Color.WHITE);
     tabbedPane.setTabPlacement(JTabbedPane.TOP);
 
     mainPanel.add(tabbedPane, BorderLayout.CENTER);
@@ -97,7 +86,7 @@ public class AdminMenu extends javax.swing.JFrame {
     homePanel.setBackground(new Color(235, 216, 200));
     homePanel.setLayout(new GridBagLayout());
 
-    JLabel titleLabel = new JLabel("Welcome Admin " + String.valueOf(user[3]) + " " + String.valueOf(user[4])+",", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Welcome Admin Fajrul!", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     GridBagConstraints c = new GridBagConstraints();
@@ -121,12 +110,6 @@ public class AdminMenu extends javax.swing.JFrame {
       new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          try {
-            servController.getAllDoctor();
-          } catch (SQLException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-          }
           tabbedPane.setSelectedIndex(1);
         }
       }
@@ -156,6 +139,20 @@ public class AdminMenu extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
           tabbedPane.setSelectedIndex(3);
+        }
+      }
+    );
+    buttonPanel.add(doctorButton);
+
+    JButton addDocButton = new JButton("Add Patient");
+    addDocButton.setFont(new Font("Poppins", Font.BOLD, 18));
+    addDocButton.setForeground(Color.WHITE);
+    addDocButton.setBackground(Color.BLACK);
+    addDocButton.addActionListener(
+      new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          tabbedPane.setSelectedIndex(4);
         }
       }
     );
@@ -233,7 +230,7 @@ public class AdminMenu extends javax.swing.JFrame {
     c.anchor = GridBagConstraints.CENTER;
     c.fill = GridBagConstraints.BOTH;
 
-    JLabel titleLabel = new JLabel("Hey Admin " + String.valueOf(user[3]) + " " + String.valueOf(user[4])+",", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Hey Admin Fajrul,", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     c.gridy = 0;
@@ -250,10 +247,14 @@ public class AdminMenu extends javax.swing.JFrame {
     c.insets = new Insets(0, 0, 50, 0);
     appointmentPanel.add(chooseLabel, c);
 
-    // String[] columnNames = { "Date", "Time", "Patient Name", "Doctor" };
-    Object[][] data = dataSchedule;
+    String[] columnNames = { "Date", "Time", "Patient Name", "Doctor" };
+    Object[][] data = {
+      { "May 3, 2023", "10:00 AM", "John Doe", "Budi" },
+      { "May 4, 2023", "2:30 PM", "Jane Smith", "Andi" },
+      { "May 5, 2023", "11:15 AM", "Bob Johnson", "Rusdi" },
+    };
 
-    DefaultTableModel tableModel = new DefaultTableModel(data, dataColumnName);
+    DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
     JTable table = new JTable(tableModel);
 
     JScrollPane tableScrollPane = new JScrollPane(table);
@@ -297,20 +298,18 @@ public class AdminMenu extends javax.swing.JFrame {
           } else {
             int row = table.getSelectedRow();
             int column = table.getSelectedColumn();
-            int Id = (int)table.getValueAt(row, 0);
-            Object date = table.getValueAt(row, 3);
-            Object time = table.getValueAt(row, 4);
+            Object date = table.getValueAt(row, 0);
+            Object time = table.getValueAt(row, 1);
             Object patientName = table.getValueAt(row, 2);
-            Object doctor = table.getValueAt(row, 1);
+            Object doctor = table.getValueAt(row, 3);
             EditAppointmentFrame editFrame = new EditAppointmentFrame(
-              Id,
               date,
               time,
               patientName,
               doctor,
               row,
               table
-            ); // pass table as argument
+            );
             editFrame.setVisible(true);
 
             isEditing = true;
@@ -323,14 +322,14 @@ public class AdminMenu extends javax.swing.JFrame {
     );
 
     addButton.addActionListener(
-    new ActionListener() {
+      new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            AddAppointmentFrame addFrame = new AddAppointmentFrame(tableModel);
-            addFrame.setVisible(true);
+          AddAppointmentFrame addFrame = new AddAppointmentFrame(tableModel);
+          addFrame.setVisible(true);
         }
-    }
-);
+      }
+    );
 
     appointmentPanel.addComponentListener(
       new ComponentAdapter() {
@@ -361,7 +360,7 @@ public class AdminMenu extends javax.swing.JFrame {
     c.anchor = GridBagConstraints.CENTER;
     c.fill = GridBagConstraints.BOTH;
 
-    JLabel titleLabel = new JLabel("Hey Admin " + String.valueOf(user[3]) + " " + String.valueOf(user[4])+",", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Hey Admin Fajrul,", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     c.gridy = 0;
@@ -378,8 +377,23 @@ public class AdminMenu extends javax.swing.JFrame {
     c.insets = new Insets(0, 0, 50, 0);
     patientPanel.add(chooseLabel, c);
 
-    String[] columnNames = MedRecordColumn;
-    Object[][] data = MedicalRecord;
+    String[] columnNames = {
+      "MRID",
+      "Patient",
+      "Nurse",
+      "Systolic",
+      "Diastolic",
+      "Heart Rate",
+      "Body Temperature",
+      "Body Height",
+      "Diagnosis ID",
+      "Doctor",
+      "Diagnosis Result",
+      "Action Status",
+    };
+    Object[][] data = {
+      { "1", "Budi", "Aisyah", 1, 1, 1, 1.0, 1, "D-123", "Rusdi", null, null },
+    };
 
     DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
     JTable table = new JTable(tableModel);
@@ -428,17 +442,30 @@ public class AdminMenu extends javax.swing.JFrame {
             Object patientName = table.getValueAt(row, 1);
             Object nurseName = table.getValueAt(row, 2);
             Object Systolic = table.getValueAt(row, 3);
-            Object Diastolic = table.getValueAt(row,4);
-            Object heartRate = table.getValueAt(row,5);
+            Object Diastolic = table.getValueAt(row, 4);
+            Object heartRate = table.getValueAt(row, 5);
             Object bodyTemp = table.getValueAt(row, 6);
             Object bodyHeight = table.getValueAt(row, 7);
-            Object diagID = table.getValueAt(row,8);
-            Object Doctor = table.getValueAt(row,9);
-            Object diagRes = table.getValueAt(row,10);
-            Object actStat = table.getValueAt(row,11);
+            Object diagID = table.getValueAt(row, 8);
+            Object Doctor = table.getValueAt(row, 9);
+            Object diagRes = table.getValueAt(row, 10);
+            Object actStat = table.getValueAt(row, 11);
             EditPatientFrame editFrame = new EditPatientFrame(
-              MRID, patientName, nurseName, Systolic, Diastolic, heartRate, bodyTemp, bodyHeight, diagID, Doctor, diagRes, actStat, row, table
-            ); // pass table as argument
+              MRID,
+              patientName,
+              nurseName,
+              Systolic,
+              Diastolic,
+              heartRate,
+              bodyTemp,
+              bodyHeight,
+              diagID,
+              Doctor,
+              diagRes,
+              actStat,
+              row,
+              table
+            );
             editFrame.setVisible(true);
             isEditing = true;
             editButton.setText("Finish");
@@ -450,11 +477,11 @@ public class AdminMenu extends javax.swing.JFrame {
     );
 
     addButton.addActionListener(
-    new ActionListener() {
+      new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            AddPatientFrame addFrame = new AddPatientFrame(tableModel);
-            addFrame.setVisible(true);
+          AddPatientFrame addFrame = new AddPatientFrame(tableModel);
+          addFrame.setVisible(true);
         }
       }
     );
@@ -504,8 +531,8 @@ public class AdminMenu extends javax.swing.JFrame {
     c.insets = new Insets(0, 0, 50, 0);
     doctorPanel.add(chooseLabel, c);
 
-    String[] columnNames = credColumn;
-    Object[][] data = Credentials;
+    String[] columnNames = { "userID", "userPassword" };
+    Object[][] data = { { 1, "admin1_" }, { 2, "doctor1_" }, { 3, "nurse1_" } };
 
     DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
     JTable table = new JTable(tableModel);
@@ -530,25 +557,28 @@ public class AdminMenu extends javax.swing.JFrame {
     buttonPanel.add(editButton);
     doctorPanel.add(buttonPanel, c);
 
-    editButton.addActionListener(new ActionListener() {
-      boolean isEditing = false;
-  
-      @Override
-      public void actionPerformed(ActionEvent e) {
+    editButton.addActionListener(
+      new ActionListener() {
+        boolean isEditing = false;
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
           int selectedRow = table.getSelectedRow();
           if (selectedRow != -1) {
-              int confirmResult = JOptionPane.showConfirmDialog(
-                      doctorPanel,
-                      "Are you sure you want to delete this account?",
-                      "Confirmation",
-                      JOptionPane.YES_NO_OPTION);
-              if (confirmResult == JOptionPane.YES_OPTION) {
-                  DefaultTableModel model = (DefaultTableModel) table.getModel();
-                  model.removeRow(selectedRow);
-              }
+            int confirmResult = JOptionPane.showConfirmDialog(
+              doctorPanel,
+              "Are you sure you want to delete this account?",
+              "Confirmation",
+              JOptionPane.YES_NO_OPTION
+            );
+            if (confirmResult == JOptionPane.YES_OPTION) {
+              DefaultTableModel model = (DefaultTableModel) table.getModel();
+              model.removeRow(selectedRow);
+            }
           }
+        }
       }
-  });
+    );
 
     doctorPanel.addComponentListener(
       new ComponentAdapter() {
@@ -567,5 +597,367 @@ public class AdminMenu extends javax.swing.JFrame {
     );
 
     return doctorPanel;
+  }
+
+  public JPanel createAddPatient() {
+    JPanel patientPanel = new JPanel();
+    patientPanel.setBackground(new Color(235, 216, 200));
+    patientPanel.setLayout(new GridBagLayout());
+
+    Font poppinsBold = new Font("Poppins", Font.BOLD, 14);
+    Font poppinsPlain = new Font("Poppins", Font.PLAIN, 14);
+
+    GridBagConstraints c = new GridBagConstraints();
+    c.gridx = 0;
+    c.weightx = 1.0;
+    c.insets = new Insets(0, 50, 0, 0);
+    c.anchor = GridBagConstraints.CENTER;
+    c.fill = GridBagConstraints.BOTH;
+
+    c.gridy = 0;
+    JLabel titleLabel = new JLabel("Add Patient");
+    titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
+    titleLabel.setForeground(new Color(19, 117, 118));
+    c.insets = new Insets(10, 50, 10, 10);
+    patientPanel.add(titleLabel, c);
+
+    c.gridx = 0;
+    c.gridy = 1;
+    c.insets = new Insets(10, 50, 10, 10);
+    JLabel IDCardLabel = new JLabel("ID Card Number:");
+    IDCardLabel.setFont(poppinsBold);
+    patientPanel.add(IDCardLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField IDCardField = new JTextField(20);
+    patientPanel.add(IDCardField, c);
+
+    c.gridx = 0;
+    c.gridy = 2;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel FNameLabel = new JLabel("First Name:");
+    FNameLabel.setFont(poppinsBold);
+    patientPanel.add(FNameLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField FNameField = new JTextField(20);
+    patientPanel.add(FNameField, c);
+
+    c.gridx = 0;
+    c.gridy = 3;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel LNameLabel = new JLabel("Last Name:");
+    LNameLabel.setFont(poppinsBold);
+    patientPanel.add(LNameLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField LNameField = new JTextField(20);
+    patientPanel.add(LNameField, c);
+
+    c.gridx = 0;
+    c.gridy = 4;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel dateLabel = new JLabel("Date Of Birth:");
+    dateLabel.setFont(poppinsBold);
+    patientPanel.add(dateLabel, c);
+
+    c.gridx = 2;
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.insets = new Insets(10, 5, 10, 5);
+    monthComboBox =
+      new JComboBox<>(
+        new String[] {
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        }
+      );
+    monthComboBox.setFont(poppinsPlain);
+    patientPanel.add(monthComboBox, c);
+
+    c.gridx = 1;
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.insets = new Insets(10, 5, 10, 5);
+    dayComboBox = new JComboBox<>();
+    dayComboBox.setFont(poppinsPlain);
+    patientPanel.add(dayComboBox, c);
+
+    c.gridx = 3;
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.insets = new Insets(10, 5, 10, 750);
+    yearComboBox =
+      new JComboBox<>(
+        new Integer[] {
+          2000,
+          2001,
+          2002,
+          2003,
+          2004,
+          2005,
+          2006,
+          2007,
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+        }
+      );
+    yearComboBox.setFont(poppinsPlain);
+    patientPanel.add(yearComboBox, c);
+
+    c.gridx = 0;
+    c.gridy = 5;
+    c.insets = new Insets(10, 50, 10, 10);
+    JLabel genderLabel = new JLabel("Gender:");
+    genderLabel.setFont(poppinsBold);
+    patientPanel.add(genderLabel, c);
+
+    c.gridx = 1;
+    JPanel genderPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    ButtonGroup genderGroup = new ButtonGroup();
+    JRadioButton maleButton = new JRadioButton("Male");
+    JRadioButton femaleButton = new JRadioButton("Female");
+    genderPanel.setBackground(new Color(235, 216, 200));
+    maleButton.setBackground(new Color(235, 216, 200));
+    femaleButton.setBackground(new Color(235, 216, 200));
+    genderGroup.add(maleButton);
+    genderGroup.add(femaleButton);
+    genderPanel.add(maleButton);
+    genderPanel.add(femaleButton);
+    patientPanel.add(genderPanel, c);
+
+    c.gridx = 0;
+    c.gridy = 6;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel cityAddressLabel = new JLabel("City Address:");
+    cityAddressLabel.setFont(poppinsBold);
+    patientPanel.add(cityAddressLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField cityAddressField = new JTextField(20);
+    patientPanel.add(cityAddressField, c);
+
+    c.gridx = 0;
+    c.gridy = 7;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel streetAddressLabel = new JLabel("Street Address:");
+    streetAddressLabel.setFont(poppinsBold);
+    patientPanel.add(streetAddressLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField streetAddressField = new JTextField(20);
+    patientPanel.add(streetAddressField, c);
+
+    c.gridx = 0;
+    c.gridy = 8;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel zipCodeLabel = new JLabel("Zip Code:");
+    zipCodeLabel.setFont(poppinsBold);
+    patientPanel.add(zipCodeLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField zipCodeField = new JTextField(20);
+    patientPanel.add(zipCodeField, c);
+
+    c.gridx = 0;
+    c.gridy = 9;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel emailLabel = new JLabel("Email:");
+    emailLabel.setFont(poppinsBold);
+    patientPanel.add(emailLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField emailField = new JTextField(20);
+    patientPanel.add(emailField, c);
+
+    c.gridx = 0;
+    c.gridy = 10;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel phoneNumLabel = new JLabel("Phone Number:");
+    phoneNumLabel.setFont(poppinsBold);
+    patientPanel.add(phoneNumLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField phoneNumField = new JTextField(20);
+    patientPanel.add(phoneNumField, c);
+
+    c.gridx = 0;
+    c.gridy = 11;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel fContactLabel = new JLabel("Contact 1 Name:");
+    fContactLabel.setFont(poppinsBold);
+    patientPanel.add(fContactLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField fContactField = new JTextField(20);
+    patientPanel.add(fContactField, c);
+
+    c.gridx = 0;
+    c.gridy = 12;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel fContactPhoneLabel = new JLabel("Contact 1 Phone Number:");
+    fContactPhoneLabel.setFont(poppinsBold);
+    patientPanel.add(fContactPhoneLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField fContactPhoneField = new JTextField(20);
+    patientPanel.add(fContactPhoneField, c);
+
+    c.gridx = 0;
+    c.gridy = 13;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel sContactLabel = new JLabel("Contact 2 Name:");
+    sContactLabel.setFont(poppinsBold);
+    patientPanel.add(sContactLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField sContactField = new JTextField(20);
+    patientPanel.add(sContactField, c);
+
+    c.gridx = 0;
+    c.gridy = 14;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel sContactPhoneLabel = new JLabel("Contact 2 Phone Number:");
+    sContactPhoneLabel.setFont(poppinsBold);
+    patientPanel.add(sContactPhoneLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField sContactPhoneField = new JTextField(20);
+    patientPanel.add(sContactPhoneField, c);
+
+    c.gridx = 0;
+    c.gridy = 15;
+    c.gridwidth = 4;
+    c.anchor = GridBagConstraints.CENTER;
+    c.insets = new Insets(10, 50, 10, 1125);
+    JButton saveButton = new JButton("Add");
+    saveButton.setFont(poppinsBold);
+    patientPanel.add(saveButton, c);
+
+    saveButton.addActionListener(
+      new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          String idCardValue = IDCardField.getText();
+          BigInteger idCardNumber = new BigInteger(idCardValue);
+          String fPatientName = FNameField.getText();
+          String lPatientName = LNameField.getText();
+          String month = (String) monthComboBox.getSelectedItem();
+          int day = (int) dayComboBox.getSelectedItem();
+          int year = (int) yearComboBox.getSelectedItem();
+          String gender;
+          if (maleButton.isSelected()) {
+            gender = "Male";
+          } else if (femaleButton.isSelected()) {
+            gender = "Female";
+          } else {
+            gender = "";
+          }
+          String cAddress = cityAddressField.getText();
+          String zCode = zipCodeField.getText();
+          String email = emailField.getText();
+          String pNum = phoneNumField.getText();
+          String fContactName = fContactField.getText();
+          String fContactPhone = fContactPhoneField.getText();
+          String sContactName = sContactField.getText();
+          String sContactPhone = sContactPhoneField.getText();
+
+          Object[] rowData = {
+            idCardNumber,
+            fPatientName,
+            lPatientName,
+            month + " " + day + ", " + year,
+            gender,
+            cAddress,
+            zCode,
+            email,
+            pNum,
+            fContactName,
+            fContactPhone,
+            sContactName,
+            sContactPhone,
+          };
+          tableModel.addRow(rowData);
+        }
+      }
+    );
+    monthComboBox.addActionListener(
+      new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          updateDayComboBox();
+        }
+      }
+    );
+    yearComboBox.addActionListener(
+      new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          updateDayComboBox();
+        }
+      }
+    );
+
+    updateDayComboBox();
+    return patientPanel;
+  }
+
+  private void updateDayComboBox() {
+    int monthIndex = monthComboBox.getSelectedIndex();
+    int year = (int) yearComboBox.getSelectedItem();
+    int daysInMonth;
+    switch (monthIndex) {
+      case 1:
+        daysInMonth =
+          (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) ? 29 : 28;
+        break;
+      case 3:
+      case 5:
+      case 8:
+      case 10:
+        daysInMonth = 30;
+        break;
+      default:
+        daysInMonth = 31;
+        break;
+    }
+    Integer[] days = new Integer[daysInMonth];
+    for (int i = 1; i <= daysInMonth; i++) {
+      days[i - 1] = i;
+    }
+    DefaultComboBoxModel<Integer> dayModel = new DefaultComboBoxModel<>(days);
+    dayComboBox.setModel(dayModel);
   }
 }
