@@ -5,7 +5,9 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 
 import javax.naming.spi.DirStateFactory.Result;
@@ -20,6 +22,13 @@ public class servController {
     static Object[] resultarray;
     static Object[] userTemp;
     static Object[][] data;
+    static String[] columnname;
+    static String[] doctors;
+    static Object[][] MedicalRecord;
+    static String[] MedRecordColumn;
+    static Object[][] Credentials;
+    static String[] credColumn;
+    static int[] servDoctorID;
 
     //Server-Client Connection
     public static void servInit() throws SQLException{
@@ -55,26 +64,168 @@ public class servController {
 	    		userTemp[i] = user.getObject(i+1);
 	    	}
     	}
-    	//DoctorMenu.user = userTemp;
-        //AdminMenu.user = userTemp;
+    	DoctorMenu.user = userTemp;
+        AdminMenu.user = userTemp;
     }
 
-    public static void getDataSchedule() throws SQLException {
-        String prep = "select ap.appointmentID , ap.patientID , ap.employeeID , ap.appointmentDate, p.firstName + ' ' + p.lastName  from clinic.appointment as ap inner join person.person as p on (ap.patientID = p.personID)";
+    public static void getDataSchedule(int username) throws SQLException {
+        String prep = "select ap.appointmentID , ap.patientID as 'Patient ID', ap.employeeID as 'Doctor ID' , ap.appointmentDate as 'Appointment Date', p.firstName + ' ' + p.lastName as 'Patient Name'  from clinic.appointment as ap inner join person.person as p on (ap.patientID = p.personID) where ap.employeeID = ?";
+        PreparedStatement stat = connect.prepareStatement(prep, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        stat.setInt(1, username);
+        ResultSet result = stat.executeQuery();
+        ResultSetMetaData rsmd = result.getMetaData();
+        columnname = new String[5];
+        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+            columnname[i-1] = rsmd.getColumnName(i);
+        }
+        // String[] name = rsmd.getColumnName(1);
+        connect.commit();
+        result.last();
+        int rowcount = result.getRow();
+        result.beforeFirst();
+        data = new Object[rowcount][5];
+        int i = 0;
+        while(result.next()) {
+                for(int j = 0 ; j < 5 ; j++){
+	    		    data[i][j] = result.getObject(j+1);
+                }
+	    	i++;
+    	}
+        DoctorMenu.dataColumnName = columnname;
+        DoctorMenu.dataSchedule = data;
+    }
+
+    public static void getDiagnosisData() throws SQLException{
+        String seek = "select p.firstName + ' ' + p.lastName as 'Patient Name', d.diagnosisResult as 'Diagnosis Result' , d.actionStatus as 'Status', d.dateModified as 'Issue Date' from clinic.diagnosis as d inner join person.person as p on (d.patientID = p.personID)";
+        PreparedStatement stat = connect.prepareStatement(seek, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet result = stat.executeQuery();
+        ResultSetMetaData rsmd = result.getMetaData();
+        columnname = new String[4];
+        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+            columnname[i-1] = rsmd.getColumnName(i);
+        }
+        // String[] name = rsmd.getColumnName(1);
+        connect.commit();
+        result.last();
+        int rowcount = result.getRow();
+        result.beforeFirst();
+        data = new Object[rowcount][4];
+        int i = 0;
+        while(result.next()) {
+                for(int j = 0 ; j < 4 ; j++){
+	    		    data[i][j] = result.getObject(j+1);
+                }
+	    	i++;
+    	}
+        DoctorMenu.diagnosisColumn = columnname;
+        AdminMenu.diagnosisColumn = columnname;
+        DoctorMenu.DiagnosisTable = data;
+        AdminMenu.DiagnosisTable = data;
+    }
+
+    public static void getDataScheduleAdmin() throws SQLException {
+        String prep = "select ap.appointmentID , p2.firstName + ' ' + p2.lastName as 'Doctor Name', p.firstName + ' ' + p.lastName as 'Patient Name',convert(date,ap.appointmentDate) as 'Appointment Date' , convert(varchar(8),convert(time,ap.appointmentDate)) as 'Appointment Time'  from clinic.appointment as ap inner join person.person as p on (ap.patientID = p.personID) inner join person.person as p2 on (ap.employeeID = p2.personID)";
+        PreparedStatement stat = connect.prepareStatement(prep, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet result = stat.executeQuery();
+        ResultSetMetaData rsmd = result.getMetaData();
+        columnname = new String[5];
+        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+            columnname[i-1] = rsmd.getColumnName(i);
+        }
+        // String[] name = rsmd.getColumnName(1);
+        connect.commit();
+        result.last();
+        int rowcount = result.getRow();
+        result.beforeFirst();
+        data = new Object[rowcount][5];
+        int i = 0;
+        while(result.next()) {
+                for(int j = 0 ; j < 5 ; j++){
+	    		    data[i][j] = result.getObject(j+1);
+                }
+	    	i++;
+    	}
+        AdminMenu.dataColumnName = columnname;
+        AdminMenu.dataSchedule = data;
+    }
+
+    public static void getAllDoctor() throws SQLException{
+        String prep = "select personID , firstName + ' '+ lastName as 'Doctor Name' from person.person where roleID = 2";
         PreparedStatement stat = connect.prepareStatement(prep, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
         ResultSet result = stat.executeQuery();
         connect.commit();
         result.last();
         int rowcount = result.getRow();
         result.beforeFirst();
-        data = new Object[rowcount][5];
+        doctors = new String[rowcount];
+        servDoctorID = new int[rowcount];
+        int i = 0;
         while(result.next()) {
-	    	for (int i = 0 ; i < rowcount ; i++) {
-                for(int j = 0 ; j < 5 ; j++){
-	    		    data[i][j] = result.getObject(j+1);
+            doctors[i] = result.getString(2);
+            servDoctorID[i] = result.getInt(1);
+        i++;
+        }
+        EditAppointmentFrame.servDoctorID = servDoctorID;
+        EditAppointmentFrame.doctors = doctors;
+    }
+
+    public static void getMedRecord() throws SQLException{
+        String prep = "select * from dbo.medicalRecord";
+        PreparedStatement stat = connect.prepareStatement(prep, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet result = stat.executeQuery();
+        ResultSetMetaData rsmd = result.getMetaData();
+        MedRecordColumn = new String[13];
+        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+            MedRecordColumn[i-1] = rsmd.getColumnName(i);
+        }
+        connect.commit();
+        result.last();
+        int rowcount = result.getRow();
+        result.beforeFirst();
+        MedicalRecord = new Object[rowcount][13];
+        int i = 0;
+        while(result.next()) {
+                for(int j = 0 ; j < 13 ; j++){
+	    		    MedicalRecord[i][j] = result.getObject(j+1);
                 }
-	    	}
+	    	i++;
     	}
-        //DoctorMenu.dataSchedule = data;
-      }
+        AdminMenu.MedRecordColumn = MedRecordColumn;
+        AdminMenu.MedicalRecord = MedicalRecord;
+    }
+
+    public static void getCred() throws SQLException{
+        String prep = "select userID as 'ID user', userPassword as 'Password' from clinic.loginCredential";
+        PreparedStatement stat = connect.prepareStatement(prep, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet result = stat.executeQuery();
+        ResultSetMetaData rsmd = result.getMetaData();
+        credColumn = new String[2];
+        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+            credColumn[i-1] = rsmd.getColumnName(i);
+        }
+        connect.commit();
+        result.last();
+        int rowcount = result.getRow();
+        result.beforeFirst();
+        Credentials = new Object[rowcount][2];
+        int i = 0;
+        while(result.next()) {
+                for(int j = 0 ; j < 2 ; j++){
+	    		    Credentials[i][j] = result.getObject(j+1);
+                }
+	    	i++;
+    	}
+        AdminMenu.Credentials = Credentials;
+        AdminMenu.credColumn = credColumn;
+    }
+
+    public static void servAppointmentUpdate(int employee, String date, int id) throws SQLException{
+        String prep = "update clinic.appointment set employeeID = ?, appointmentDate = ? where appointmentID = ?";
+        PreparedStatement stmt = connect.prepareStatement(prep);
+        stmt.setInt(1, employee);
+        stmt.setString(2, date);
+        stmt.setInt(3, id);
+        stmt.execute();
+        connect.commit();
+    }
 }

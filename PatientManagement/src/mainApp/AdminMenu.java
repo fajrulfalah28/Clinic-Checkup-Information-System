@@ -3,13 +3,26 @@ package mainApp;
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigInteger;
+import java.sql.SQLException;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 public class AdminMenu extends javax.swing.JFrame {
 
   private JTabbedPane tabbedPane;
   private JTable table;
+  static Object[] user;
+  public static Object[][] dataSchedule;
+  public static String[] dataColumnName;
+  public static Object[][] DiagnosisTable;
+  public static String[] diagnosisColumn;
+  public static Object[][] MedicalRecord;
+  public static String[] MedRecordColumn;
+  public static Object[][] Credentials;
+  public static String[] credColumn;
   private JComboBox<String> monthComboBox;
   private JComboBox<Integer> dayComboBox;
   private JComboBox<Integer> yearComboBox;
@@ -19,6 +32,14 @@ public class AdminMenu extends javax.swing.JFrame {
   private DefaultTableModel tableModel;
 
   public AdminMenu() {
+    try {
+      servController.getDataScheduleAdmin();
+      servController.getMedRecord();
+      servController.getCred();
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     setPreferredSize(screenSize);
     setUndecorated(true);
@@ -86,7 +107,7 @@ public class AdminMenu extends javax.swing.JFrame {
     homePanel.setBackground(new Color(235, 216, 200));
     homePanel.setLayout(new GridBagLayout());
 
-    JLabel titleLabel = new JLabel("Welcome Admin Fajrul!", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Welcome Admin " + String.valueOf(user[3]) + " " + String.valueOf(user[4])+",", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     GridBagConstraints c = new GridBagConstraints();
@@ -110,6 +131,12 @@ public class AdminMenu extends javax.swing.JFrame {
       new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
+          try {
+            servController.getAllDoctor();
+          } catch (SQLException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+          }
           tabbedPane.setSelectedIndex(1);
         }
       }
@@ -230,7 +257,7 @@ public class AdminMenu extends javax.swing.JFrame {
     c.anchor = GridBagConstraints.CENTER;
     c.fill = GridBagConstraints.BOTH;
 
-    JLabel titleLabel = new JLabel("Hey Admin Fajrul,", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Hey Admin " + String.valueOf(user[3]) + " " + String.valueOf(user[4])+",", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     c.gridy = 0;
@@ -247,14 +274,10 @@ public class AdminMenu extends javax.swing.JFrame {
     c.insets = new Insets(0, 0, 50, 0);
     appointmentPanel.add(chooseLabel, c);
 
-    String[] columnNames = { "Date", "Time", "Patient Name", "Doctor" };
-    Object[][] data = {
-      { "May 3, 2023", "10:00 AM", "John Doe", "Budi" },
-      { "May 4, 2023", "2:30 PM", "Jane Smith", "Andi" },
-      { "May 5, 2023", "11:15 AM", "Bob Johnson", "Rusdi" },
-    };
+    // String[] columnNames = { "Date", "Time", "Patient Name", "Doctor" };
+    Object[][] data = dataSchedule;
 
-    DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
+    DefaultTableModel tableModel = new DefaultTableModel(data, dataColumnName);
     JTable table = new JTable(tableModel);
 
     JScrollPane tableScrollPane = new JScrollPane(table);
@@ -298,18 +321,20 @@ public class AdminMenu extends javax.swing.JFrame {
           } else {
             int row = table.getSelectedRow();
             int column = table.getSelectedColumn();
-            Object date = table.getValueAt(row, 0);
-            Object time = table.getValueAt(row, 1);
+            int Id = (int)table.getValueAt(row, 0);
+            Object date = table.getValueAt(row, 3);
+            Object time = table.getValueAt(row, 4);
             Object patientName = table.getValueAt(row, 2);
-            Object doctor = table.getValueAt(row, 3);
+            Object doctor = table.getValueAt(row, 1);
             EditAppointmentFrame editFrame = new EditAppointmentFrame(
+              Id,
               date,
               time,
               patientName,
               doctor,
               row,
               table
-            );
+            ); // pass table as argument
             editFrame.setVisible(true);
 
             isEditing = true;
@@ -322,14 +347,14 @@ public class AdminMenu extends javax.swing.JFrame {
     );
 
     addButton.addActionListener(
-      new ActionListener() {
+    new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          AddAppointmentFrame addFrame = new AddAppointmentFrame(tableModel);
-          addFrame.setVisible(true);
+            AddAppointmentFrame addFrame = new AddAppointmentFrame(tableModel);
+            addFrame.setVisible(true);
         }
-      }
-    );
+    }
+);
 
     appointmentPanel.addComponentListener(
       new ComponentAdapter() {
@@ -360,7 +385,7 @@ public class AdminMenu extends javax.swing.JFrame {
     c.anchor = GridBagConstraints.CENTER;
     c.fill = GridBagConstraints.BOTH;
 
-    JLabel titleLabel = new JLabel("Hey Admin Fajrul,", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Hey Admin " + String.valueOf(user[3]) + " " + String.valueOf(user[4])+",", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     c.gridy = 0;
@@ -377,23 +402,8 @@ public class AdminMenu extends javax.swing.JFrame {
     c.insets = new Insets(0, 0, 50, 0);
     patientPanel.add(chooseLabel, c);
 
-    String[] columnNames = {
-      "MRID",
-      "Patient",
-      "Nurse",
-      "Systolic",
-      "Diastolic",
-      "Heart Rate",
-      "Body Temperature",
-      "Body Height",
-      "Diagnosis ID",
-      "Doctor",
-      "Diagnosis Result",
-      "Action Status",
-    };
-    Object[][] data = {
-      { "1", "Budi", "Aisyah", 1, 1, 1, 1.0, 1, "D-123", "Rusdi", null, null },
-    };
+    String[] columnNames = MedRecordColumn;
+    Object[][] data = MedicalRecord;
 
     DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
     JTable table = new JTable(tableModel);
@@ -442,30 +452,17 @@ public class AdminMenu extends javax.swing.JFrame {
             Object patientName = table.getValueAt(row, 1);
             Object nurseName = table.getValueAt(row, 2);
             Object Systolic = table.getValueAt(row, 3);
-            Object Diastolic = table.getValueAt(row, 4);
-            Object heartRate = table.getValueAt(row, 5);
+            Object Diastolic = table.getValueAt(row,4);
+            Object heartRate = table.getValueAt(row,5);
             Object bodyTemp = table.getValueAt(row, 6);
             Object bodyHeight = table.getValueAt(row, 7);
-            Object diagID = table.getValueAt(row, 8);
-            Object Doctor = table.getValueAt(row, 9);
-            Object diagRes = table.getValueAt(row, 10);
-            Object actStat = table.getValueAt(row, 11);
+            Object diagID = table.getValueAt(row,8);
+            Object Doctor = table.getValueAt(row,9);
+            Object diagRes = table.getValueAt(row,10);
+            Object actStat = table.getValueAt(row,11);
             EditPatientFrame editFrame = new EditPatientFrame(
-              MRID,
-              patientName,
-              nurseName,
-              Systolic,
-              Diastolic,
-              heartRate,
-              bodyTemp,
-              bodyHeight,
-              diagID,
-              Doctor,
-              diagRes,
-              actStat,
-              row,
-              table
-            );
+              MRID, patientName, nurseName, Systolic, Diastolic, heartRate, bodyTemp, bodyHeight, diagID, Doctor, diagRes, actStat, row, table
+            ); // pass table as argument
             editFrame.setVisible(true);
             isEditing = true;
             editButton.setText("Finish");
@@ -477,11 +474,11 @@ public class AdminMenu extends javax.swing.JFrame {
     );
 
     addButton.addActionListener(
-      new ActionListener() {
+    new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          AddPatientFrame addFrame = new AddPatientFrame(tableModel);
-          addFrame.setVisible(true);
+            AddPatientFrame addFrame = new AddPatientFrame(tableModel);
+            addFrame.setVisible(true);
         }
       }
     );
@@ -531,8 +528,8 @@ public class AdminMenu extends javax.swing.JFrame {
     c.insets = new Insets(0, 0, 50, 0);
     doctorPanel.add(chooseLabel, c);
 
-    String[] columnNames = { "userID", "userPassword" };
-    Object[][] data = { { 1, "admin1_" }, { 2, "doctor1_" }, { 3, "nurse1_" } };
+    String[] columnNames = credColumn;
+    Object[][] data = Credentials;
 
     DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
     JTable table = new JTable(tableModel);
@@ -557,28 +554,25 @@ public class AdminMenu extends javax.swing.JFrame {
     buttonPanel.add(editButton);
     doctorPanel.add(buttonPanel, c);
 
-    editButton.addActionListener(
-      new ActionListener() {
-        boolean isEditing = false;
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
+    editButton.addActionListener(new ActionListener() {
+      boolean isEditing = false;
+  
+      @Override
+      public void actionPerformed(ActionEvent e) {
           int selectedRow = table.getSelectedRow();
           if (selectedRow != -1) {
-            int confirmResult = JOptionPane.showConfirmDialog(
-              doctorPanel,
-              "Are you sure you want to delete this account?",
-              "Confirmation",
-              JOptionPane.YES_NO_OPTION
-            );
-            if (confirmResult == JOptionPane.YES_OPTION) {
-              DefaultTableModel model = (DefaultTableModel) table.getModel();
-              model.removeRow(selectedRow);
-            }
+              int confirmResult = JOptionPane.showConfirmDialog(
+                      doctorPanel,
+                      "Are you sure you want to delete this account?",
+                      "Confirmation",
+                      JOptionPane.YES_NO_OPTION);
+              if (confirmResult == JOptionPane.YES_OPTION) {
+                  DefaultTableModel model = (DefaultTableModel) table.getModel();
+                  model.removeRow(selectedRow);
+              }
           }
-        }
       }
-    );
+  });
 
     doctorPanel.addComponentListener(
       new ComponentAdapter() {
