@@ -4,9 +4,6 @@ import java.awt.*;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
-import java.util.Arrays;
-
 import javax.swing.*;
 
 class EditAppointmentFrame extends JFrame {
@@ -15,18 +12,12 @@ class EditAppointmentFrame extends JFrame {
   private JComboBox<Integer> dayComboBox;
   private JComboBox<Integer> yearComboBox;
   private JComboBox<String> timeComboBox;
-  private JComboBox<String> DoctorComboBox;
   private JTextField patientNameField;
   private JPanel doctorPanel;
   private int row;
-  private JTable table; // declare table as an instance variable
-  public static String[] doctors;
-  public static int doctorId;
-  public static int[] servDoctorID;
-  
+  private JTable table; 
 
   public EditAppointmentFrame(
-    int Id,
     Object date,
     Object time,
     Object patientName,
@@ -35,7 +26,7 @@ class EditAppointmentFrame extends JFrame {
     JTable table
   ) {
     this.row = row;
-    this.table = table; // initialize the instance variable with the passed-in parameter
+    this.table = table; 
     setTitle("Edit Appointment");
     setSize(500, 300);
     setLocationRelativeTo(null);
@@ -64,21 +55,21 @@ class EditAppointmentFrame extends JFrame {
     monthComboBox =
       new JComboBox<>(
         new String[] {
-          "01",
-          "02",
-          "03",
-          "04",
-          "05",
-          "06",
-          "07",
-          "08",
-          "09",
-          "10",
-          "11",
-          "12",
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
         }
       );
-    monthComboBox.setSelectedIndex(Integer.parseInt(date.toString().split("-")[1]) -1);
+    monthComboBox.setSelectedIndex(getMonthIndex(date));
     monthComboBox.setFont(poppinsPlain);
     panel.add(monthComboBox, c);
 
@@ -87,10 +78,7 @@ class EditAppointmentFrame extends JFrame {
     c.weightx = 0.5;
     c.insets = new Insets(10, 5, 10, 5);
     dayComboBox =
-      new JComboBox<>(
-        createDayArray(Integer.parseInt(date.toString().split("-")[1]) - 1, Integer.parseInt(getDay(date)))
-      );
-    dayComboBox.setSelectedIndex(Integer.parseInt(getDay(date)) - 1);
+      new JComboBox<>();
     dayComboBox.setFont(poppinsPlain);
     panel.add(dayComboBox, c);
 
@@ -99,8 +87,16 @@ class EditAppointmentFrame extends JFrame {
     c.weightx = 1.0;
     c.insets = new Insets(10, 5, 10, 10);
     yearComboBox =
-      new JComboBox<>(createYearArray(Integer.parseInt(getYear(date))));
-    yearComboBox.setSelectedIndex(3);
+      new JComboBox<>(
+        new Integer[] {
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        }
+      );
+    yearComboBox.setSelectedItem(getYear(date));
     yearComboBox.setFont(poppinsPlain);
     panel.add(yearComboBox, c);
 
@@ -110,7 +106,6 @@ class EditAppointmentFrame extends JFrame {
     timeLabel.setFont(poppinsBold);
     panel.add(timeLabel, c);
 
-    // Time combo box
     c.gridx = 1;
     c.gridy = 1;
     c.fill = GridBagConstraints.HORIZONTAL;
@@ -136,8 +131,6 @@ class EditAppointmentFrame extends JFrame {
           "8:00 PM",
           "9:00 PM",
           "10:00 PM",
-          "11:00 PM",
-          "12:00 AM",
         }
       );
     timeComboBox.setSelectedItem(time);
@@ -161,29 +154,14 @@ class EditAppointmentFrame extends JFrame {
     panel.add(doctorLabel, c);
 
     c.gridx = 1;
-    doctorPanel = new JPanel();
-    doctorPanel.setLayout(new BoxLayout(doctorPanel, BoxLayout.Y_AXIS)); // change layout to BoxLayout
-    DoctorComboBox = new JComboBox<>(doctors);
-    // JRadioButton andiRadioButton = new JRadioButton("Andi");
-    // JRadioButton budiRadioButton = new JRadioButton("Budi");
-    // JRadioButton rusdiRadioButton = new JRadioButton("Rusdi");
-    // ButtonGroup doctorButtonGroup = new ButtonGroup();
-    // doctorButtonGroup.add(andiRadioButton);
-    // doctorButtonGroup.add(budiRadioButton);
-    // doctorButtonGroup.add(rusdiRadioButton);
-    // if (doctor.toString().equals("1")) {
-    //   andiRadioButton.setSelected(true);
-    // } else if (doctor.toString().equals("2")) {
-    //   budiRadioButton.setSelected(true);
-    // } else if (doctor.toString().equals("3")) {
-    //   rusdiRadioButton.setSelected(true);
-    // }
-    // doctorPanel.add(andiRadioButton);
-    // doctorPanel.add(budiRadioButton);
-    // doctorPanel.add(rusdiRadioButton);
-    doctorPanel.add(DoctorComboBox);
-    timeComboBox.setSelectedItem(1);
-    panel.add(doctorPanel, c);
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.weightx = 1.0;
+    c.insets = new Insets(10, 5, 10, 10);
+    String[] doctorOptions = new String[] {"Andi", "Budi", "Rusdi"};
+    JComboBox<String> doctorComboBox = new JComboBox<>(doctorOptions);
+    doctorComboBox.setSelectedItem(doctor.toString());
+    doctorComboBox.setFont(poppinsPlain);
+    panel.add(doctorComboBox, c);
 
     c.gridx = 0;
     c.gridy = 4;
@@ -198,39 +176,19 @@ class EditAppointmentFrame extends JFrame {
       new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          String newDate;
-          if((int)dayComboBox.getSelectedItem() >= 10){
-          newDate =  String.valueOf(yearComboBox.getSelectedItem()) + "-" + String.valueOf(monthComboBox.getSelectedItem()) + "-" + String.valueOf(dayComboBox.getSelectedItem());
-          } else {
-          newDate =  String.valueOf(yearComboBox.getSelectedItem()) + "-" + String.valueOf(monthComboBox.getSelectedItem()) + "-0" + String.valueOf(dayComboBox.getSelectedItem());
-          }
+          String newDate = String.format(
+            "%s %d, %d",
+            monthComboBox.getSelectedItem(),
+            dayComboBox.getSelectedItem(),
+            yearComboBox.getSelectedItem()
+          );
           String newTime = timeComboBox.getSelectedItem().toString();
-          String newDateTime = newDate + " " + newTime;
           String newPatientName = patientNameField.getText();
-          String newDoctor = String.valueOf(DoctorComboBox.getSelectedItem());
-          doctorId = DoctorComboBox.getSelectedIndex();
-          // if (andiRadioButton.isSelected()) {
-          //   newDoctor = "Andi";
-          //   //edit di database juga buat id docternya
-          // } else if (budiRadioButton.isSelected()) {
-          //   newDoctor = "Budi";
-          //   //edit di database juga buat id docternya
-          // } else if (rusdiRadioButton.isSelected()) {
-          //   newDoctor = "Rusdi";
-            
-          // }
-          table.setValueAt(newDate, row, 3);
-          table.setValueAt(newTime, row, 4);
+          String newDoctor = doctorComboBox.getSelectedItem().toString();
+          table.setValueAt(newDate, row, 0);
+          table.setValueAt(newTime, row, 1);
           table.setValueAt(newPatientName, row, 2);
-          table.setValueAt(newDoctor, row, 1);
-          System.out.println(doctorId);
-          try {
-            
-            servController.servAppointmentUpdate(servDoctorID[doctorId], newDateTime, Id );
-          } catch (SQLException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-          }
+          table.setValueAt(newDoctor, row, 3);
           dispose();
         }
       }
@@ -238,73 +196,85 @@ class EditAppointmentFrame extends JFrame {
     panel.add(saveButton, c);
 
     add(panel);
+
+    monthComboBox.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        updateDayComboBox();
+      }
+    });
+    yearComboBox.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        updateDayComboBox();
+      }
+    });
+
+    updateDayComboBox();
   }
 
-  // private int getMonthIndex(Object date) {
-  //   String month = date.toString().split("-")[1];
-  //   String[] months = new String[] {
-  //     "January",
-  //     "February",
-  //     "March",
-  //     "April",
-  //     "May",
-  //     "June",
-  //     "July",
-  //     "August",
-  //     "September",
-  //     "October",
-  //     "November",
-  //     "December",
-  //   };
-  //   for (int i = 0; i < months.length; i++) {
-  //     if (months[i].equals(month)) {
-  //       return i;
-  //     }
-  //   }
-  //   return -1;
-  // }
-
-  private String getDay(Object date) {
-    return date.toString().split("-")[2].replace(",", "");
-  }
-
-  private String getYear(Object date) {
-    return date.toString().split("-")[0];
-  }
-
-  private Integer[] createYearArray(int currentYear) {
-    int startYear = 2020;
-    Integer[] years = new Integer[currentYear - startYear + 1];
-    for (int i = 0; i < years.length; i++) {
-      years[i] = startYear + i;
+  private int getMonthIndex(Object date) {
+    String[] parts = date.toString().split(" ");
+    String month = parts[0];
+    switch (month) {
+      case "January":
+        return 0;
+      case "February":
+        return 1;
+      case "March":
+        return 2;
+      case "April":
+        return 3;
+      case "May":
+        return 4;
+      case "June":
+        return 5;
+      case "July":
+        return 6;
+      case "August":
+        return 7;
+      case "September":
+        return 8;
+      case "October":
+        return 9;
+      case "November":
+        return 10;
+      case "December":
+        return 11;
+      default:
+        return 0;
     }
-    return years;
   }
 
-  private Integer[] createDayArray(int monthIndex, int currentDay) {
-    int numDays = getNumDays(monthIndex);
-    Integer[] days = new Integer[numDays];
-    for (int i = 0; i < days.length; i++) {
-      days[i] = i + 1;
+  private int getYear(Object date) {
+    String[] parts = date.toString().split(" ");
+    return Integer.parseInt(parts[2]);
+  }
+
+  private void updateDayComboBox() {
+    int monthIndex = monthComboBox.getSelectedIndex();
+    int year = (int) yearComboBox.getSelectedItem();
+    int daysInMonth;
+    switch (monthIndex) {
+      case 1:
+        daysInMonth = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) ? 29 : 28;
+        break;
+      case 3:
+      case 5:
+      case 8:
+      case 10:
+        daysInMonth = 30;
+        break;
+      default:
+        daysInMonth = 31;
+        break;
     }
-    return days;
+    Integer[] days = new Integer[daysInMonth];
+    for (int i = 1; i <= daysInMonth; i++) {
+      days[i-1] = i;
+    }
+    DefaultComboBoxModel<Integer> dayModel = new DefaultComboBoxModel<>(days);
+    dayComboBox.setModel(dayModel);
   }
 
-  private int getNumDays(int monthIndex) {
-    int[] numDays = new int[] {
-      31,
-      28,
-      31,
-      30,
-      31,
-      30,
-      31,
-      31,
-      30,
-      31,
-      30,
-      31,
-    };
-    return numDays[monthIndex];
-  }
 }

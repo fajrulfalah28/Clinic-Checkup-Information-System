@@ -2,12 +2,10 @@ package mainApp;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.SQLException;
-
 import javax.swing.*;
 
 public class LoginMenu extends javax.swing.JFrame {
-static Object[] login;
+
   public LoginMenu() {
     JPanel mainPanel = new JPanel();
     mainPanel.setBackground(new Color(235, 216, 200));
@@ -33,7 +31,7 @@ static Object[] login;
 
     JLabel passwordLabel = new JLabel("Password:");
     passwordLabel.setFont(new Font("Poppins", Font.PLAIN, 14));
-    JPasswordField passwordField = new JPasswordField(12);
+    JTextField passwordField = new JTextField(12);
 
     JButton signIn = new JButton("Log In");
     signIn.setBackground(Color.BLACK);
@@ -141,40 +139,23 @@ static Object[] login;
       new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            int user = Integer.parseInt(usernameField.getText());
-            String passwordPlaceholder = String.valueOf(passwordField.getPassword());
-            try {
-                login = servController.getLoginCred(user, passwordPlaceholder);
-            } catch (SQLException e1) {
-                e1.printStackTrace();
-            }
-            if ((login[0] != null) && (login[1] != null)){
-                if ((user == (int)(login[0])) && (passwordPlaceholder.equals(String.valueOf(login[1])))) 
-                {
-                      try {
-                          servController.getUser((int)(login[0]));
-                      } catch (SQLException e1) {
-                          // TODO Auto-generated catch block
-                          e1.printStackTrace();
-                      }
-                      if ((int)(DoctorMenu.user[1]) == 2){
-                      DoctorMenu docmenu = new DoctorMenu();
-                      frame.dispose();
-                      } else if ((int)(DoctorMenu.user[1]) == 1){
-                      AdminMenu adminmenu = new AdminMenu();
-                      frame.dispose();
-                      }
-                } 
-            } else {
-                    
-                JOptionPane.showMessageDialog(
-                    frame,
-                    "Invalid username or password",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-                );
-            }
-            
+          String username = usernameField.getText();
+          String password = passwordField.getText();
+
+          if (username.equals("doctor") && password.equals("doctor")) {
+            frame.dispose();
+            DoctorMenu doctorMenu = new DoctorMenu();
+          } else if (username.equals("admin") && password.equals("admin")) {
+            frame.dispose();
+            AdminMenu adminMenu = new AdminMenu();
+          } else {
+            JOptionPane.showMessageDialog(
+              frame,
+              "Invalid username or password",
+              "Error",
+              JOptionPane.ERROR_MESSAGE
+            );
+          }
         }
       }
     );
