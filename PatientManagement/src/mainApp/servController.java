@@ -1,5 +1,6 @@
 package mainApp;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -225,6 +226,64 @@ public class servController {
         stmt.setInt(1, employee);
         stmt.setString(2, date);
         stmt.setInt(3, id);
+        stmt.execute();
+        connect.commit();
+    }
+
+    public static void servAddPatient(int idcard, String firstname, String lastname, String dateofbirth, String gender,String city, String street, int zipcode, String email, int phonenumber, String contactname, int contactnum1, String contact2, int contactnum2) throws SQLException{
+        String prep = "exec createPerson @IDCardNumber = ?, @roleID = 5, @firstname = ?, @lastname = ?, @dateofBirth = ?, @gender = ? ,@cityAddress = ?,@streetAddress = ?,@zipCode = ?,@email = ?,@phoneNumber = ?,@contact1Name = ?, @contact1phoneNumber = ?, @contact2Name =? , @contact2phoneNumber = ?";
+        PreparedStatement stmt = connect.prepareStatement(prep);
+        stmt.setInt(1, idcard);
+        stmt.setString(2, firstname);
+        stmt.setString(3, lastname);
+        stmt.setString(4, dateofbirth);
+        stmt.setString(5, gender);
+        stmt.setString(6, city);
+        stmt.setString(7, street);
+        stmt.setInt(8, zipcode);
+        stmt.setString(9, email);
+        stmt.setInt(10, phonenumber);
+        stmt.setString(11, contactname);
+        stmt.setInt(12, contactnum1);
+        stmt.setString(13, contact2);
+        stmt.setInt(14, contactnum2);
+        stmt.executeUpdate();
+        connect.commit();
+    }
+
+    public static void listPatient(int user) throws SQLException{
+        String prep = "select distinct personID , firstName + ' '+ lastName as 'Doctor Name' from person.person as p right join clinic.appointment as a on (personID = a.patientID) where a.employeeID = ? and  roleID = 5";
+        PreparedStatement stmt = connect.prepareStatement(prep, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        stmt.setInt(1, user);
+        ResultSet result = stmt.executeQuery();
+        connect.commit();
+        result.last();
+        int rowcount = result.getRow();
+        result.beforeFirst();
+        String[] listpatient = new String[rowcount];
+        int[] patientID = new int[rowcount];
+        int i = 0;
+        while(result.next()){
+            listpatient[i] = result.getString(2);
+            patientID[i] = result.getInt(1);
+        }
+        AddRecord.listpatient = listpatient;
+        AddRecord.patientID = patientID;
+    }
+
+    public static void addRecord(int[] id, String[] patient, Object[] patientData, int doctorID)throws SQLException{
+        int patientID = id[0];
+        for(int i = 0 ; i < patient.length ; i++){
+            if(patient[i].equalsIgnoreCase(String.valueOf(patientData[0]))){
+               patientID = id[i];
+            }
+        }
+        String prep = "exec createDiagnosis @patientID = ?,@employeeID = ?,@diagnosisResult = ?,@actionStatus = ?";
+        PreparedStatement stmt = connect.prepareStatement(prep);
+        stmt.setInt(1, patientID);
+        stmt.setInt(2, doctorID);
+        stmt.setString(3, String.valueOf(patientData[1]));
+        stmt.setString(4, String.valueOf(patientData[2]));
         stmt.execute();
         connect.commit();
     }

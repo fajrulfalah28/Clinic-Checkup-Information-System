@@ -295,6 +295,12 @@ public class DoctorMenu extends javax.swing.JFrame {
       new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
+          try {
+            servController.listPatient((int)user[0]);
+          } catch (SQLException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+          }
           StartSessionFrame startSessionFrame = new StartSessionFrame(
             dataSchedule
           );

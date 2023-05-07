@@ -10,6 +10,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import com.microsoft.sqlserver.jdbc.StringUtils;
+
 public class AdminMenu extends javax.swing.JFrame {
 
   private JTabbedPane tabbedPane;
@@ -36,6 +38,7 @@ public class AdminMenu extends javax.swing.JFrame {
       servController.getDataScheduleAdmin();
       servController.getMedRecord();
       servController.getCred();
+      
     } catch (SQLException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -511,7 +514,7 @@ public class AdminMenu extends javax.swing.JFrame {
     c.anchor = GridBagConstraints.CENTER;
     c.fill = GridBagConstraints.BOTH;
 
-    JLabel titleLabel = new JLabel("Hey Admin Fajrul,", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Hey Admin " + String.valueOf(user[3]) + " " + String.valueOf(user[4])+"," , JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     c.gridy = 0;
@@ -664,18 +667,18 @@ public class AdminMenu extends javax.swing.JFrame {
     monthComboBox =
       new JComboBox<>(
         new String[] {
-          "January",
-          "February",
-          "March",
+          "Januari",
+          "Februari",
+          "Maret",
           "April",
-          "May",
-          "June",
-          "July",
-          "August",
+          "Mei",
+          "Juni",
+          "Juli",
+          "Agustus",
           "September",
-          "October",
+          "Oktober",
           "November",
-          "December",
+          "Desember",
         }
       );
     monthComboBox.setFont(poppinsPlain);
@@ -864,46 +867,80 @@ public class AdminMenu extends javax.swing.JFrame {
     saveButton.addActionListener(
       new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          String idCardValue = IDCardField.getText();
-          BigInteger idCardNumber = new BigInteger(idCardValue);
+          // String idCardValue = IDCardField.getText();
+          int idCardNumber = Integer.parseInt(IDCardField.getText());
           String fPatientName = FNameField.getText();
           String lPatientName = LNameField.getText();
-          String month = (String) monthComboBox.getSelectedItem();
+          String month = String.valueOf(monthComboBox.getSelectedIndex() + 1);
           int day = (int) dayComboBox.getSelectedItem();
           int year = (int) yearComboBox.getSelectedItem();
           String gender;
           if (maleButton.isSelected()) {
-            gender = "Male";
+            gender = "M";
           } else if (femaleButton.isSelected()) {
-            gender = "Female";
+            gender = "F";
           } else {
             gender = "";
           }
           String cAddress = cityAddressField.getText();
-          String zCode = zipCodeField.getText();
+          String sAddress = streetAddressField.getText();
+          int zCode = Integer.valueOf(zipCodeField.getText());
           String email = emailField.getText();
-          String pNum = phoneNumField.getText();
+          int pNum = Integer.valueOf(phoneNumField.getText());
           String fContactName = fContactField.getText();
-          String fContactPhone = fContactPhoneField.getText();
+          int fContactPhone = Integer.valueOf(fContactPhoneField.getText());
           String sContactName = sContactField.getText();
-          String sContactPhone = sContactPhoneField.getText();
+          int sContactPhone = Integer.valueOf(sContactPhoneField.getText());
+          String dateofbirth = month + "-"+ day +"-"+ year;
 
-          Object[] rowData = {
-            idCardNumber,
-            fPatientName,
-            lPatientName,
-            month + " " + day + ", " + year,
-            gender,
-            cAddress,
-            zCode,
-            email,
-            pNum,
-            fContactName,
-            fContactPhone,
-            sContactName,
-            sContactPhone,
-          };
-          tableModel.addRow(rowData);
+          
+          if(!fPatientName.isBlank() && !lPatientName.isBlank() && !dateofbirth.isBlank() && !gender.isBlank() && !cAddress.isBlank() && !sAddress.isBlank() && !email.isBlank() && !fContactName.isBlank() && !sContactName.isBlank()){
+            if(idCardNumber > 0 && zCode > 0 && pNum > 0 && fContactPhone >0 && sContactPhone >0){
+              try {
+                servController.servAddPatient(idCardNumber, fPatientName, lPatientName, dateofbirth , gender, cAddress, sAddress , zCode, email, pNum, fContactName, fContactPhone, sContactName, sContactPhone);
+              } catch (SQLException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+              }
+              JOptionPane.showMessageDialog(
+                    patientPanel,
+                    "Successfully adding patient",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+              JOptionPane.showMessageDialog(
+                    patientPanel,
+                    "Fill out the form!",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            }
+          } else {
+            JOptionPane.showMessageDialog(
+                    patientPanel,
+                    "Fill out the form!",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
+          }
+          
+          // Object[] rowData = {
+          //   idCardNumber,
+          //   fPatientName,
+          //   lPatientName,
+          //   month + " " + day + ", " + year,
+          //   gender,
+          //   cAddress,
+          //   zCode,
+          //   email,
+          //   pNum,
+          //   fContactName,
+          //   fContactPhone,
+          //   sContactName,
+          //   sContactPhone,
+          // };
+          // tableModel.addRow(rowData);
         }
       }
     );

@@ -3,12 +3,15 @@ package mainApp;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.*;
 
 public class AddRecord extends JFrame {
 
+  public static int[] patientID;
+  public static String[] listpatient;
   private JLabel patientNameLabel;
   private JLabel currentDateLabel;
   private JLabel diagnosisResultLabel;
@@ -74,7 +77,13 @@ public class AddRecord extends JFrame {
           }
           String date = currentDateLabel.getText().substring(6);
 
-          Object[] rowData = { name, diagnosis, status, date };
+          Object[] rowData = { name, diagnosis, status};
+          try {
+            servController.addRecord(patientID, listpatient, rowData, (int)DoctorMenu.user[0]);
+          } catch (SQLException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+          }
 
           /*
           DefaultTableModel model = (DefaultTableModel) table.getModel();

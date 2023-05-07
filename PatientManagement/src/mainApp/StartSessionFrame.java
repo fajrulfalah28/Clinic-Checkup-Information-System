@@ -12,6 +12,7 @@ import javax.swing.*;
 
 public class StartSessionFrame extends JFrame {
 
+;
   private JComboBox<String> patientComboBox;
   private JButton startSessionButton;
   private JLabel selectPatientLabel;
