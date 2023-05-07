@@ -14,6 +14,8 @@ public class AddAppointmentFrame extends JFrame {
     private JTextField patientNameField;
     private JPanel doctorPanel;
     private DefaultTableModel tableModel;
+    public static String[] doctors;
+    public static int[] servDoctorID;
 
     public AddAppointmentFrame(DefaultTableModel model) {
         this.tableModel = model;
@@ -142,16 +144,18 @@ public class AddAppointmentFrame extends JFrame {
         c.gridx = 1;
         doctorPanel = new JPanel();
         doctorPanel.setLayout(new BoxLayout(doctorPanel, BoxLayout.Y_AXIS));
-        JRadioButton andiRadioButton = new JRadioButton("Andi");
-        JRadioButton budiRadioButton = new JRadioButton("Budi");
-        JRadioButton rusdiRadioButton = new JRadioButton("Rusdi");
-        ButtonGroup doctorButtonGroup = new ButtonGroup();
-        doctorButtonGroup.add(andiRadioButton);
-        doctorButtonGroup.add(budiRadioButton);
-        doctorButtonGroup.add(rusdiRadioButton);
-        doctorPanel.add(andiRadioButton);
-        doctorPanel.add(budiRadioButton);
-        doctorPanel.add(rusdiRadioButton);
+        // JRadioButton andiRadioButton = new JRadioButton("Andi");
+        // JRadioButton budiRadioButton = new JRadioButton("Budi");
+        // JRadioButton rusdiRadioButton = new JRadioButton("Rusdi");
+        // ButtonGroup doctorButtonGroup = new ButtonGroup();
+        JComboBox DoctorComboBox = new JComboBox<>(doctors);
+        // doctorButtonGroup.add(andiRadioButton);
+        // doctorButtonGroup.add(budiRadioButton);
+        // doctorButtonGroup.add(rusdiRadioButton);
+        // doctorPanel.add(andiRadioButton);
+        // doctorPanel.add(budiRadioButton);
+        // doctorPanel.add(rusdiRadioButton);
+        doctorPanel.add(DoctorComboBox);
         panel.add(doctorPanel, c);
 
         c.gridx = 0;
@@ -164,7 +168,7 @@ public class AddAppointmentFrame extends JFrame {
         panel.add(saveButton, c);
 
         // Set column names for table model
-        String[] columnNames = {"Date", "Time", "Patient Name", "Doctor"};
+        String[] columnNames = AdminMenu.dataColumnName;
         tableModel.setColumnIdentifiers(columnNames);
 
         add(panel);
@@ -177,13 +181,13 @@ public class AddAppointmentFrame extends JFrame {
                 String time = (String) timeComboBox.getSelectedItem();
                 String patientName = patientNameField.getText();
                 String doctorName = "";
-                if (andiRadioButton.isSelected()) {
-                    doctorName = "Andi";
-                } else if (budiRadioButton.isSelected()) {
-                    doctorName = "Budi";
-                } else if (rusdiRadioButton.isSelected()) {
-                    doctorName = "Rusdi";
-                }
+                // if (andiRadioButton.isSelected()) {
+                //     doctorName = "Andi";
+                // } else if (budiRadioButton.isSelected()) {
+                //     doctorName = "Budi";
+                // } else if (rusdiRadioButton.isSelected()) {
+                //     doctorName = "Rusdi";
+                // }
 
                 // Add the appointment data to the table model
                 Object[] rowData = {month + " " + day + ", " + year, time, patientName, doctorName};
@@ -195,7 +199,7 @@ public class AddAppointmentFrame extends JFrame {
                 yearComboBox.setSelectedIndex(0);
                 timeComboBox.setSelectedIndex(0);
                 patientNameField.setText("");
-                doctorButtonGroup.clearSelection();
+                // doctorButtonGroup.clearSelection();
             }
         });
     }
