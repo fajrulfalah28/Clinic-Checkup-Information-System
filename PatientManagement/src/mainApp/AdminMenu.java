@@ -72,11 +72,13 @@ public class AdminMenu extends javax.swing.JFrame {
     tabbedPane.addTab("Edit Appointment", createEditAppointmentPanel());
     tabbedPane.addTab("Edit Patient", createPatientPanel());
     tabbedPane.addTab("Edit Account", createDoctorPanel());
+    tabbedPane.addTab("Add Patient", createAddPatient());
     tabbedPane.setBackground(Color.BLACK);
     tabbedPane.setForegroundAt(0, Color.WHITE);
     tabbedPane.setForegroundAt(1, Color.WHITE);
     tabbedPane.setForegroundAt(2, Color.WHITE);
     tabbedPane.setForegroundAt(3, Color.WHITE);
+    tabbedPane.setForegroundAt(4, Color.WHITE);
     tabbedPane.setTabPlacement(JTabbedPane.TOP);
 
     mainPanel.add(tabbedPane, BorderLayout.CENTER);
@@ -156,6 +158,20 @@ public class AdminMenu extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
           tabbedPane.setSelectedIndex(3);
+        }
+      }
+    );
+    buttonPanel.add(doctorButton);
+
+    JButton addDocButton = new JButton("Add Patient");
+    addDocButton.setFont(new Font("Poppins", Font.BOLD, 18));
+    addDocButton.setForeground(Color.WHITE);
+    addDocButton.setBackground(Color.BLACK);
+    addDocButton.addActionListener(
+      new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          tabbedPane.setSelectedIndex(4);
         }
       }
     );
@@ -567,5 +583,367 @@ public class AdminMenu extends javax.swing.JFrame {
     );
 
     return doctorPanel;
+  }
+
+  public JPanel createAddPatient() {
+    JPanel patientPanel = new JPanel();
+    patientPanel.setBackground(new Color(235, 216, 200));
+    patientPanel.setLayout(new GridBagLayout());
+
+    Font poppinsBold = new Font("Poppins", Font.BOLD, 14);
+    Font poppinsPlain = new Font("Poppins", Font.PLAIN, 14);
+
+    GridBagConstraints c = new GridBagConstraints();
+    c.gridx = 0;
+    c.weightx = 1.0;
+    c.insets = new Insets(0, 50, 0, 0);
+    c.anchor = GridBagConstraints.CENTER;
+    c.fill = GridBagConstraints.BOTH;
+
+    c.gridy = 0;
+    JLabel titleLabel = new JLabel("Add Patient");
+    titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
+    titleLabel.setForeground(new Color(19, 117, 118));
+    c.insets = new Insets(10, 50, 10, 10);
+    patientPanel.add(titleLabel, c);
+
+    c.gridx = 0;
+    c.gridy = 1;
+    c.insets = new Insets(10, 50, 10, 10);
+    JLabel IDCardLabel = new JLabel("ID Card Number:");
+    IDCardLabel.setFont(poppinsBold);
+    patientPanel.add(IDCardLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField IDCardField = new JTextField(20);
+    patientPanel.add(IDCardField, c);
+
+    c.gridx = 0;
+    c.gridy = 2;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel FNameLabel = new JLabel("First Name:");
+    FNameLabel.setFont(poppinsBold);
+    patientPanel.add(FNameLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField FNameField = new JTextField(20);
+    patientPanel.add(FNameField, c);
+
+    c.gridx = 0;
+    c.gridy = 3;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel LNameLabel = new JLabel("Last Name:");
+    LNameLabel.setFont(poppinsBold);
+    patientPanel.add(LNameLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField LNameField = new JTextField(20);
+    patientPanel.add(LNameField, c);
+
+    c.gridx = 0;
+    c.gridy = 4;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel dateLabel = new JLabel("Date Of Birth:");
+    dateLabel.setFont(poppinsBold);
+    patientPanel.add(dateLabel, c);
+
+    c.gridx = 2;
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.insets = new Insets(10, 5, 10, 5);
+    monthComboBox =
+      new JComboBox<>(
+        new String[] {
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        }
+      );
+    monthComboBox.setFont(poppinsPlain);
+    patientPanel.add(monthComboBox, c);
+
+    c.gridx = 1;
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.insets = new Insets(10, 5, 10, 5);
+    dayComboBox = new JComboBox<>();
+    dayComboBox.setFont(poppinsPlain);
+    patientPanel.add(dayComboBox, c);
+
+    c.gridx = 3;
+    c.fill = GridBagConstraints.HORIZONTAL;
+    c.insets = new Insets(10, 5, 10, 750);
+    yearComboBox =
+      new JComboBox<>(
+        new Integer[] {
+          2000,
+          2001,
+          2002,
+          2003,
+          2004,
+          2005,
+          2006,
+          2007,
+          2008,
+          2009,
+          2010,
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+        }
+      );
+    yearComboBox.setFont(poppinsPlain);
+    patientPanel.add(yearComboBox, c);
+
+    c.gridx = 0;
+    c.gridy = 5;
+    c.insets = new Insets(10, 50, 10, 10);
+    JLabel genderLabel = new JLabel("Gender:");
+    genderLabel.setFont(poppinsBold);
+    patientPanel.add(genderLabel, c);
+
+    c.gridx = 1;
+    JPanel genderPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    ButtonGroup genderGroup = new ButtonGroup();
+    JRadioButton maleButton = new JRadioButton("Male");
+    JRadioButton femaleButton = new JRadioButton("Female");
+    genderPanel.setBackground(new Color(235, 216, 200));
+    maleButton.setBackground(new Color(235, 216, 200));
+    femaleButton.setBackground(new Color(235, 216, 200));
+    genderGroup.add(maleButton);
+    genderGroup.add(femaleButton);
+    genderPanel.add(maleButton);
+    genderPanel.add(femaleButton);
+    patientPanel.add(genderPanel, c);
+
+    c.gridx = 0;
+    c.gridy = 6;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel cityAddressLabel = new JLabel("City Address:");
+    cityAddressLabel.setFont(poppinsBold);
+    patientPanel.add(cityAddressLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField cityAddressField = new JTextField(20);
+    patientPanel.add(cityAddressField, c);
+
+    c.gridx = 0;
+    c.gridy = 7;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel streetAddressLabel = new JLabel("Street Address:");
+    streetAddressLabel.setFont(poppinsBold);
+    patientPanel.add(streetAddressLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField streetAddressField = new JTextField(20);
+    patientPanel.add(streetAddressField, c);
+
+    c.gridx = 0;
+    c.gridy = 8;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel zipCodeLabel = new JLabel("Zip Code:");
+    zipCodeLabel.setFont(poppinsBold);
+    patientPanel.add(zipCodeLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField zipCodeField = new JTextField(20);
+    patientPanel.add(zipCodeField, c);
+
+    c.gridx = 0;
+    c.gridy = 9;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel emailLabel = new JLabel("Email:");
+    emailLabel.setFont(poppinsBold);
+    patientPanel.add(emailLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField emailField = new JTextField(20);
+    patientPanel.add(emailField, c);
+
+    c.gridx = 0;
+    c.gridy = 10;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel phoneNumLabel = new JLabel("Phone Number:");
+    phoneNumLabel.setFont(poppinsBold);
+    patientPanel.add(phoneNumLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField phoneNumField = new JTextField(20);
+    patientPanel.add(phoneNumField, c);
+
+    c.gridx = 0;
+    c.gridy = 11;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel fContactLabel = new JLabel("Contact 1 Name:");
+    fContactLabel.setFont(poppinsBold);
+    patientPanel.add(fContactLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField fContactField = new JTextField(20);
+    patientPanel.add(fContactField, c);
+
+    c.gridx = 0;
+    c.gridy = 12;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel fContactPhoneLabel = new JLabel("Contact 1 Phone Number:");
+    fContactPhoneLabel.setFont(poppinsBold);
+    patientPanel.add(fContactPhoneLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField fContactPhoneField = new JTextField(20);
+    patientPanel.add(fContactPhoneField, c);
+
+    c.gridx = 0;
+    c.gridy = 13;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel sContactLabel = new JLabel("Contact 2 Name:");
+    sContactLabel.setFont(poppinsBold);
+    patientPanel.add(sContactLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField sContactField = new JTextField(20);
+    patientPanel.add(sContactField, c);
+
+    c.gridx = 0;
+    c.gridy = 14;
+    c.insets = new Insets(10, 50, 10, 0);
+    JLabel sContactPhoneLabel = new JLabel("Contact 2 Phone Number:");
+    sContactPhoneLabel.setFont(poppinsBold);
+    patientPanel.add(sContactPhoneLabel, c);
+
+    c.gridx = 1;
+    c.insets = new Insets(10, 0, 10, 0);
+    JTextField sContactPhoneField = new JTextField(20);
+    patientPanel.add(sContactPhoneField, c);
+
+    c.gridx = 0;
+    c.gridy = 15;
+    c.gridwidth = 4;
+    c.anchor = GridBagConstraints.CENTER;
+    c.insets = new Insets(10, 50, 10, 1125);
+    JButton saveButton = new JButton("Add");
+    saveButton.setFont(poppinsBold);
+    patientPanel.add(saveButton, c);
+
+    saveButton.addActionListener(
+      new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          String idCardValue = IDCardField.getText();
+          BigInteger idCardNumber = new BigInteger(idCardValue);
+          String fPatientName = FNameField.getText();
+          String lPatientName = LNameField.getText();
+          String month = (String) monthComboBox.getSelectedItem();
+          int day = (int) dayComboBox.getSelectedItem();
+          int year = (int) yearComboBox.getSelectedItem();
+          String gender;
+          if (maleButton.isSelected()) {
+            gender = "Male";
+          } else if (femaleButton.isSelected()) {
+            gender = "Female";
+          } else {
+            gender = "";
+          }
+          String cAddress = cityAddressField.getText();
+          String zCode = zipCodeField.getText();
+          String email = emailField.getText();
+          String pNum = phoneNumField.getText();
+          String fContactName = fContactField.getText();
+          String fContactPhone = fContactPhoneField.getText();
+          String sContactName = sContactField.getText();
+          String sContactPhone = sContactPhoneField.getText();
+
+          Object[] rowData = {
+            idCardNumber,
+            fPatientName,
+            lPatientName,
+            month + " " + day + ", " + year,
+            gender,
+            cAddress,
+            zCode,
+            email,
+            pNum,
+            fContactName,
+            fContactPhone,
+            sContactName,
+            sContactPhone,
+          };
+          tableModel.addRow(rowData);
+        }
+      }
+    );
+    monthComboBox.addActionListener(
+      new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          updateDayComboBox();
+        }
+      }
+    );
+    yearComboBox.addActionListener(
+      new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          updateDayComboBox();
+        }
+      }
+    );
+
+    updateDayComboBox();
+    return patientPanel;
+  }
+
+  private void updateDayComboBox() {
+    int monthIndex = monthComboBox.getSelectedIndex();
+    int year = (int) yearComboBox.getSelectedItem();
+    int daysInMonth;
+    switch (monthIndex) {
+      case 1:
+        daysInMonth =
+          (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) ? 29 : 28;
+        break;
+      case 3:
+      case 5:
+      case 8:
+      case 10:
+        daysInMonth = 30;
+        break;
+      default:
+        daysInMonth = 31;
+        break;
+    }
+    Integer[] days = new Integer[daysInMonth];
+    for (int i = 1; i <= daysInMonth; i++) {
+      days[i - 1] = i;
+    }
+    DefaultComboBoxModel<Integer> dayModel = new DefaultComboBoxModel<>(days);
+    dayComboBox.setModel(dayModel);
   }
 }
