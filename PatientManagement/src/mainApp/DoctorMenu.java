@@ -2,22 +2,14 @@ package mainApp;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
-import javax.tools.Diagnostic;
 
 public class DoctorMenu extends javax.swing.JFrame {
 
@@ -25,20 +17,8 @@ public class DoctorMenu extends javax.swing.JFrame {
   private List<LocalDateTime> dates;
   private JLabel scheduleLabel;
   private JTable table;
-  public static Object[] user;
-  public static Object[][] dataSchedule;
-  public static String[] dataColumnName;
-  public static Object[][] DiagnosisTable;
-  public static String[] diagnosisColumn;
 
   public DoctorMenu() {
-    try {
-        servController.getDataSchedule((int)user[0]);
-        servController.getDiagnosisData();
-    } catch (SQLException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     setPreferredSize(screenSize);
     setUndecorated(true);
@@ -102,7 +82,7 @@ public class DoctorMenu extends javax.swing.JFrame {
     homePanel.setBackground(new Color(235, 216, 200));
     homePanel.setLayout(new GridBagLayout());
 
-    JLabel titleLabel = new JLabel("Welcome Doctor " + String.valueOf(user[3]) + " " + String.valueOf(user[4])+",", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Welcome Doctor Fajrul!", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     GridBagConstraints c = new GridBagConstraints();
@@ -220,7 +200,7 @@ public class DoctorMenu extends javax.swing.JFrame {
     c.anchor = GridBagConstraints.CENTER;
     c.fill = GridBagConstraints.BOTH;
 
-    JLabel titleLabel = new JLabel("Hey doctor "+ String.valueOf(user[3]) + " " +String.valueOf(user[4])+",", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Hey doctor Fajrul,", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     c.gridy = 0;
@@ -247,11 +227,7 @@ public class DoctorMenu extends javax.swing.JFrame {
     c.insets = new Insets(0, 0, 30, 0);
     appointmentPanel.add(shiftLabel, c);
 
-    TableModel datamodel = new DefaultTableModel(dataSchedule, dataColumnName);
-    JTable table = new JTable(datamodel);
-    TableRowSorter sort = new TableRowSorter<TableModel>(datamodel);
-    table.setRowSorter(sort);
-    table.getTableHeader().setReorderingAllowed(false);
+    JTable table = new JTable(getData(), getColumnNames());
     JScrollPane tableScrollPane = new JScrollPane(table);
     c.gridy = 3;
     c.insets = new Insets(0, 50, 0, 50);
@@ -296,7 +272,7 @@ public class DoctorMenu extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
           StartSessionFrame startSessionFrame = new StartSessionFrame(
-            dataSchedule
+            getData()
           );
           startSessionFrame.setVisible(true);
         }
@@ -331,73 +307,55 @@ public class DoctorMenu extends javax.swing.JFrame {
     return appointmentPanel;
   }
 
-//   private Object[][] getData() {
-//     Object[][] data = {
-//       { "May 3, 2023", "10:00 AM", "John Doe"},
-//       { "May 4, 2023", "10:30 AM", "Jane Smith"},
-//       { "May 5, 2023", "11:15 AM", "Bob Johnson"},
-//     };
-//     return data;
-//   }
+  private Object[][] getData() {
+    Object[][] data = {
+      { "May 3, 2023", "10:00 AM", "John Doe"},
+      { "May 4, 2023", "10:30 AM", "Jane Smith"},
+      { "May 5, 2023", "11:15 AM", "Bob Johnson"},
+    };
+    return data;
+  }
 
-//   private String[] getColumnNames() {
-//     String[] columnNames = {
-//       "Date",
-//       "Time",
-//       "Patient Name"
-//     };
-//     return columnNames;
-//   }
+  private String[] getColumnNames() {
+    String[] columnNames = {
+      "Date",
+      "Time",
+      "Patient Name"
+    };
+    return columnNames;
+  }
 
   private String getScheduleLabelText() {
-    Object[][] data = dataSchedule;
-    // SimpleDateFormat sdformat = new SimpleDateFormat("MMMM d, yyyy h:mm a");
-    // Date now = new Date();
-    Instant closestDateTime;
-    Instant sql;
-    Timestamp dateTimeStr = (Timestamp) data[0][3];
-    sql = dateTimeStr.toInstant();
-    closestDateTime = dateTimeStr.toInstant();
-    
+    Object[][] data = getData();
+
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime closestDateTime = null;
     for (Object[] row : data) {
-    //   String dateStr = (String) row[3];
-    //   String timeStr = (String) row[1];
-      dateTimeStr = (Timestamp) row[3];
-      sql = dateTimeStr.toInstant();
-    //   DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
-    //     "MMMM d, yyyy h:mm a"
-    //   );
-    //   Date dateTime = new Date(dateTimeStr.getTime());
-      if (sql.compareTo(Instant.now()) >= 0 && (sql.isBefore(closestDateTime))) {
-        closestDateTime = sql;
+      String dateStr = (String) row[0];
+      String timeStr = (String) row[1];
+      String dateTimeStr = dateStr + " " + timeStr;
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+        "MMMM d, yyyy h:mm a"
+      );
+      LocalDateTime dateTime = LocalDateTime.parse(dateTimeStr, formatter);
+      if (dateTime.isAfter(now)) {
+        closestDateTime = dateTime;
         break;
       }
     }
-    // if (closestDateTime == null) {
-    //   return "No upcoming appointments";
-    // }
-
-    Duration duration = Duration.between(Instant.now(), closestDateTime);
-    long days = duration.toDays();
-    long hours = duration.toHours() % 24;
-    long minutes = duration.toMinutes() % 60;
-    String labelStr = null;
-    if(duration.toDays() > 0 ){
-        labelStr = String.format(
-            "Your next appointment will be held in %d days %d hours and %d minutes",
-            days,
-            hours,
-            minutes
-        );
-    }else if(duration.toDays() == 0 ){
-        labelStr = String.format(
-            "Your next appointment will be held in %d hours and %d minutes",
-            hours,
-            minutes
-        );
-    } else {
-        labelStr = "No upcoming Appoinments";
+    if (closestDateTime == null) {
+      return "No upcoming appointments";
     }
+
+    Duration duration = Duration.between(now, closestDateTime);
+    long hours = duration.toHours();
+    long minutes = duration.toMinutes() % 60;
+
+    String labelStr = String.format(
+      "Your next appointment will be held in %d hours and %d minutes",
+      hours,
+      minutes
+    );
 
     return labelStr;
   }
@@ -412,7 +370,7 @@ public class DoctorMenu extends javax.swing.JFrame {
     c.anchor = GridBagConstraints.CENTER;
     c.fill = GridBagConstraints.BOTH;
 
-    JLabel titleLabel = new JLabel("Hey doctor " + String.valueOf(user[3]) + " " +String.valueOf(user[4])+",", JLabel.CENTER);
+    JLabel titleLabel = new JLabel("Hey doctor Fajrul,", JLabel.CENTER);
     titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
     titleLabel.setForeground(new Color(19, 117, 118));
     c.gridy = 0;
@@ -438,51 +396,60 @@ public class DoctorMenu extends javax.swing.JFrame {
     searchButton.setFont(new Font("Poppins", Font.BOLD, 18));
     searchButton.setForeground(Color.WHITE);
     searchButton.setBackground(Color.BLACK);
+    searchButton.addActionListener(
+      new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          String searchTerm = searchField.getText();
+
+          List<Object[]> filteredRows = performSearch(searchTerm);
+
+          DefaultTableModel model = (DefaultTableModel) table.getModel();
+          model.setDataVector(
+            filteredRows.toArray(new Object[0][]),
+            new String[] {
+              "Patient Name",
+              "Diagnosis Result",
+              "Status",
+              "Date",
+            }
+          );
+        }
+
+        private List<Object[]> performSearch(String searchTerm) {
+          return null;
+        }
+      }
+    );
     searchPanel.add(searchButton, BorderLayout.EAST);
     patientPanel.add(searchPanel, c);
-    
-    TableModel model = new DefaultTableModel(DiagnosisTable, diagnosisColumn);
-    JTable table = new JTable(model);
-    TableRowSorter rowSort = new TableRowSorter(model);
-    table.setRowSorter(rowSort);
-    table.getTableHeader().setReorderingAllowed(false);
+
+    String[] columnNames = {
+      "Patient",
+      "Nurse",
+      "Systolic",
+      "Diastolic",
+      "Heart Rate",
+      "Body Temperature",
+      "Body Height",
+      "Doctor",
+      "Diagnosis Result",
+      "Action Status"
+    };
+    Object[][] data = {
+      {"Budi", "Aisyah", 1, 1, 1, 1.0, 1, "Rusdi", null, null}
+    };
+
+    DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
+    JTable table = new JTable(tableModel);
     JScrollPane scrollPane = new JScrollPane(table);
     c.gridy = 3;
     c.weightx = 1.0;
     c.weighty = 1.0;
     c.insets = new Insets(0, 50, 100, 50);
     patientPanel.add(scrollPane, c);
-    
-    searchButton.addActionListener(
-      new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          String searchTerm = searchField.getText();
-            rowSort.setRowFilter(new filter(searchTerm));
-        //   List<Object[]> filteredRows = performSearch(searchTerm);
 
-        //   DefaultTableModel model = (DefaultTableModel) table.getModel();
-        //   model.setDataVector(
-        //     filteredRows.toArray(new Object[0][]),
-        //     new String[] {
-        //       "Patient Name",
-        //       "Diagnosis Result",
-        //       "Status",
-        //       "Date",
-        //     }
-        //   );
-        }
-
-        // private List<Object[]> performSearch(String searchTerm) {
-        //   return null;
-        // }
-      }
-    );
-
-
-
-
-    // // Buat Nambahin Row Baru di tabel patient
-    // Object[] rowData = {};
+    // Buat Nambahin Row Baru di tabel patient
+    Object[] rowData = {};
 
     patientPanel.addComponentListener(
       new ComponentAdapter() {
@@ -501,17 +468,5 @@ public class DoctorMenu extends javax.swing.JFrame {
     );
 
     return patientPanel;
-  }
-  private class filter extends RowFilter{
-    String searchText;
-    filter(String searchText){
-        this.searchText = searchText.toLowerCase();
-    }
-    @Override
-    public boolean include(Entry entry) {
-        // TODO Auto-generated method stub
-       return entry.getStringValue(0).toLowerCase().indexOf(searchText) >= 0;
-    }
-    
   }
 }
