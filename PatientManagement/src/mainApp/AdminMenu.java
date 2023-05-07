@@ -564,12 +564,19 @@ public class AdminMenu extends javax.swing.JFrame {
       public void actionPerformed(ActionEvent e) {
           int selectedRow = table.getSelectedRow();
           if (selectedRow != -1) {
+            
               int confirmResult = JOptionPane.showConfirmDialog(
                       doctorPanel,
                       "Are you sure you want to delete this account?",
                       "Confirmation",
                       JOptionPane.YES_NO_OPTION);
               if (confirmResult == JOptionPane.YES_OPTION) {
+                try {
+                  servController.deleteCredential((int)table.getModel().getValueAt(table.getSelectedRow(), 0));
+                } catch (SQLException e1) {
+                  // TODO Auto-generated catch block
+                  e1.printStackTrace();
+                }
                   DefaultTableModel model = (DefaultTableModel) table.getModel();
                   model.removeRow(selectedRow);
               }

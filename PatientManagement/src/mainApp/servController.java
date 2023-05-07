@@ -287,4 +287,12 @@ public class servController {
         stmt.execute();
         connect.commit();
     }
+
+    public static void deleteCredential(int userid) throws SQLException{
+       String prep =  "DELETE FROM clinic.loginCredential WHERE userID = ?";
+       PreparedStatement stmt = connect.prepareStatement(prep);
+       stmt.setInt(1, userid);
+       stmt.execute();
+       connect.commit();
+    }
 }
