@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -20,6 +22,7 @@ class AddPatientFrame extends JFrame {
   private int row;
   private JTable table;
   private DefaultTableModel tableModel;
+  private JTextField bodyWeightField;
 
   public AddPatientFrame(DefaultTableModel model) {
     this.tableModel = model;
@@ -39,7 +42,7 @@ class AddPatientFrame extends JFrame {
     c.anchor = GridBagConstraints.WEST;
     c.insets = new Insets(10, 10, 10, 10);
     
-    JLabel patientNameLabel = new JLabel("Patient Name:");
+    JLabel patientNameLabel = new JLabel("Patient ID:");
     patientNameLabel.setFont(poppinsBold);
     panel.add(patientNameLabel, c);
 
@@ -50,7 +53,7 @@ class AddPatientFrame extends JFrame {
 
     c.gridx = 0;
     c.gridy = 2;
-    JLabel nurseNameLabel = new JLabel("Nurse Name:");
+    JLabel nurseNameLabel = new JLabel("Nurse ID:");
     nurseNameLabel.setFont(poppinsBold);
     panel.add(nurseNameLabel, c);
 
@@ -110,19 +113,29 @@ class AddPatientFrame extends JFrame {
 
     c.gridx = 0;
     c.gridy = 8;
+    JLabel bodyWeightLabel = new JLabel("Body Weight :");
+    bodyWeightLabel.setFont(poppinsBold);
+    panel.add(bodyWeightLabel, c);
+
+    c.gridx = 1;
+    bodyWeightField = new JTextField(20);
+    panel.add(bodyWeightField, c);
+
+    c.gridx = 0;
+    c.gridy = 9;
     JLabel doctorLabel = new JLabel("Doctor:");
     doctorLabel.setFont(poppinsBold);
     panel.add(doctorLabel, c);
 
     c.gridx = 1;
     c.insets = new Insets(10, 5, 10, 10);
-    String[] doctorOptions = new String[] {"Andi", "Budi", "Rusdi"};
+    String[] doctorOptions = AdminMenu.doctors;
     JComboBox<String> doctorComboBox = new JComboBox<>(doctorOptions);
     doctorComboBox.setFont(poppinsPlain);
     panel.add(doctorComboBox, c);
 
     c.gridx = 0;
-    c.gridy = 9;
+    c.gridy = 10;
     c.gridwidth = 4;
     c.anchor = GridBagConstraints.CENTER;
     c.insets = new Insets(10, 10, 10, 10);
@@ -133,19 +146,19 @@ class AddPatientFrame extends JFrame {
     saveButton.setForeground(Color.WHITE);
     panel.add(saveButton, c);
 
-    String[] columnNames = {"MRID",
-    "Patient",
-    "Nurse",
-    "Systolic",
-    "Diastolic",
-    "Heart Rate",
-    "Body Temperature",
-    "Body Height",
-    "Diagnosis ID",
-    "Doctor",
-    "Diagnosis Result",
-    "Action Status"};
-    tableModel.setColumnIdentifiers(columnNames);
+    // String[] columnNames = {"MRID",
+    // "Patient",
+    // "Nurse",
+    // "Systolic",
+    // "Diastolic",
+    // "Heart Rate",
+    // "Body Temperature",
+    // "Body Height",
+    // "Diagnosis ID",
+    // "Doctor",
+    // "Diagnosis Result",
+    // "Action Status"};
+    // tableModel.setColumnIdentifiers(columnNames);
 
     add(panel);
 
@@ -153,27 +166,58 @@ class AddPatientFrame extends JFrame {
       new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          String newPatientName = patientNameField.getText();
-          String newNurseName = nurseNameField.getText();
-          String newSystolic = systolicField.getText();
-          String newDiastolic = diastolicField.getText();
-          String newHeartRate = heartRateField.getText();
-          String newBodyTemp = bodyTempField.getText();
-          String newBodyHeight = bodyHeightField.getText();
-          String newDoctor = doctorComboBox.getSelectedItem().toString();
-
-          Object[] rowData = {null, newPatientName, newNurseName, newSystolic, newDiastolic, newHeartRate, newBodyTemp, newBodyHeight, null, newDoctor, null, null};
-                tableModel.addRow(rowData);
-
-                patientNameField.setText("");
-                nurseNameField.setText("");
-                systolicField.setText("");
-                diastolicField.setText("");
-                heartRateField.setText("");
-                bodyTempField.setText("");
-                bodyHeightField.setText("");
+          int newPatientName = Integer.parseInt(patientNameField.getText());
+          int newNurseName = Integer.parseInt(nurseNameField.getText());
+          int newSystolic = Integer.parseInt(systolicField.getText());
+          int newDiastolic = Integer.parseInt(diastolicField.getText());
+          int newHeartRate = Integer.parseInt(heartRateField.getText());
+          int newBodyTemp = Integer.parseInt(bodyTempField.getText());
+          int newBodyHeight = Integer.parseInt(bodyHeightField.getText());
+          int newBodyWeight = Integer.parseInt(bodyWeightField.getText());
+          int newDoctor = doctorComboBox.getSelectedIndex();
+          if(!patientNameField.getText().isBlank() && !nurseNameField.getText().isBlank() && !systolicField.getText().isBlank() && !diastolicField.getText().isBlank() && !heartRateField.getText().isBlank() && !bodyTempField.getText().isBlank() && !bodyHeightField.getText().isBlank() && !bodyWeightField.getText().isBlank()){
+            try {
+              servController.AddPatientFrame(newPatientName, newNurseName, newSystolic, newDiastolic, newHeartRate, newBodyTemp, newBodyHeight, newBodyWeight);
+            } catch (SQLException e1) {
+              // TODO Auto-generated catch block
+              e1.printStackTrace();
+            }
+              JOptionPane.showMessageDialog(
+                    panel,
+                    "Successfully adding patient",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+              JOptionPane.showMessageDialog(
+                    panel,
+                    "Fill out the form!",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            }
+            patientNameField.setText("");
+            nurseNameField.setText("");
+            systolicField.setText("");
+            diastolicField.setText("");
+            heartRateField.setText("");
+            bodyTempField.setText("");
+            bodyHeightField.setText("");
+          } 
         }
-      }
+        
     );
-  }
-}
+      }
+    }
+
+         
+
+          // Object[] rowData = {null, newPatientName, newNurseName, newSystolic, newDiastolic, newHeartRate, newBodyTemp, newBodyHeight, null, newDoctor, null, null};
+          //       tableModel.addRow(rowData);
+
+               
+        
+      
+    
+  
+

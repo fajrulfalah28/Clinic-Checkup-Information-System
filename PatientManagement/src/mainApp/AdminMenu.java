@@ -25,6 +25,10 @@ public class AdminMenu extends javax.swing.JFrame {
   public static String[] MedRecordColumn;
   public static Object[][] Credentials;
   public static String[] credColumn;
+public static String[] doctors;
+public static int[] servDoctorID;
+public static Object[][] patient;
+public static String[] patientcol;
   private JComboBox<String> monthComboBox;
   private JComboBox<Integer> dayComboBox;
   private JComboBox<Integer> yearComboBox;
@@ -37,7 +41,8 @@ public class AdminMenu extends javax.swing.JFrame {
     try {
       servController.getDataScheduleAdmin();
       servController.getMedRecord();
-      servController.getCred();
+      servController.getCred((int)user[0]);
+      servController.getAllDoctor();
       
     } catch (SQLException e) {
       // TODO Auto-generated catch block
@@ -84,6 +89,7 @@ public class AdminMenu extends javax.swing.JFrame {
     tabbedPane.addTab("Edit Patient", createPatientPanel());
     tabbedPane.addTab("Edit Account", createDoctorPanel());
     tabbedPane.addTab("Add Patient", createAddPatient());
+    tabbedPane.addTab("Patient list", createListPatientPanel());
     tabbedPane.setBackground(Color.BLACK);
     tabbedPane.setForegroundAt(0, Color.WHITE);
     tabbedPane.setForegroundAt(1, Color.WHITE);
@@ -998,4 +1004,110 @@ public class AdminMenu extends javax.swing.JFrame {
     DefaultComboBoxModel<Integer> dayModel = new DefaultComboBoxModel<>(days);
     dayComboBox.setModel(dayModel);
   }
+
+  public JPanel createListPatientPanel() {
+    try {
+      servController.listAllPatient();
+    } catch (SQLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    JPanel patient = new JPanel();
+    patient.setBackground(new Color(235, 216, 200));
+    patient.setLayout(new GridBagLayout());
+
+    GridBagConstraints c = new GridBagConstraints();
+    c.gridx = 0;
+    c.anchor = GridBagConstraints.CENTER;
+    c.fill = GridBagConstraints.BOTH;
+
+    JLabel titleLabel = new JLabel("Hey Admin " + String.valueOf(user[3]) + " " + String.valueOf(user[4])+"," , JLabel.CENTER);
+    titleLabel.setFont(new Font("Poppins", Font.BOLD, 50));
+    titleLabel.setForeground(new Color(19, 117, 118));
+    c.gridy = 0;
+    c.insets = new Insets(20, 0, 0, 0);
+    patient.add(titleLabel, c);
+
+    JLabel chooseLabel = new JLabel(
+      "Here are the list of patient...",
+      JLabel.CENTER
+    );
+    chooseLabel.setFont(new Font("Poppins", Font.PLAIN, 16));
+    chooseLabel.setForeground(Color.BLACK);
+    c.gridy = 1;
+    c.insets = new Insets(0, 0, 50, 0);
+    patient.add(chooseLabel, c);
+
+    // String[] columnNames = patientcol;
+    // Object[][] data = AdminMenu.patient;
+
+    DefaultTableModel tableModel = new DefaultTableModel(AdminMenu.patient, patientcol);
+    JTable table = new JTable(tableModel);
+
+    JScrollPane tableScrollPane = new JScrollPane(table);
+    c.gridy = 2;
+    c.insets = new Insets(0, 50, 0, 50);
+    c.weightx = 1.0;
+    c.weighty = 1.0;
+    patient.add(tableScrollPane, c);
+
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setBackground(new Color(235, 216, 200));
+    c.gridy = 3;
+    c.insets = new Insets(50, 0, 10, 0);
+    c.weightx = 1.0;
+
+    JButton editButton = new JButton("Delete Account");
+    editButton.setFont(new Font("Poppins", Font.BOLD, 18));
+    editButton.setForeground(Color.WHITE);
+    editButton.setBackground(Color.BLACK);
+    // buttonPanel.add(editButton);
+    patient.add(buttonPanel, c);
+
+    editButton.addActionListener(new ActionListener() {
+      boolean isEditing = false;
+  
+      @Override
+      public void actionPerformed(ActionEvent e) {
+          int selectedRow = table.getSelectedRow();
+          if (selectedRow != -1) {
+            
+              int confirmResult = JOptionPane.showConfirmDialog(
+                      patient,
+                      "Are you sure you want to delete this account?",
+                      "Confirmation",
+                      JOptionPane.YES_NO_OPTION);
+              if (confirmResult == JOptionPane.YES_OPTION) {
+                try {
+                  servController.deleteCredential((int)table.getModel().getValueAt(table.getSelectedRow(), 0));
+                } catch (SQLException e1) {
+                  // TODO Auto-generated catch block
+                  e1.printStackTrace();
+                }
+                  DefaultTableModel model = (DefaultTableModel) table.getModel();
+                  model.removeRow(selectedRow);
+              }
+          }
+      }
+  });
+
+    patient.addComponentListener(
+      new ComponentAdapter() {
+        @Override
+        public void componentResized(ComponentEvent e) {
+          int width = patient.getWidth();
+          int height = patient.getHeight();
+
+          float fontSize = 30.0f * Math.min(width, height) / 1000.0f;
+          buttonPanel.setFont(buttonPanel.getFont().deriveFont(fontSize));
+
+          fontSize = 45.0f * Math.min(width, height) / 1000.0f;
+          titleLabel.setFont(titleLabel.getFont().deriveFont(fontSize));
+        }
+      }
+    );
+
+    return patient;
+  }
+
 }

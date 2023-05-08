@@ -166,6 +166,8 @@ public class servController {
             servDoctorID[i] = result.getInt(1);
         i++;
         }
+        AdminMenu.doctors = doctors;
+        AdminMenu.servDoctorID = servDoctorID;
         EditAppointmentFrame.servDoctorID = servDoctorID;
         EditAppointmentFrame.doctors = doctors;
     }
@@ -195,9 +197,10 @@ public class servController {
         AdminMenu.MedicalRecord = MedicalRecord;
     }
 
-    public static void getCred() throws SQLException{
-        String prep = "select userID as 'ID user', userPassword as 'Password' from clinic.loginCredential";
+    public static void getCred(int id) throws SQLException{
+        String prep = "select userID as 'ID user', userPassword as 'Password' from clinic.loginCredential where not userID = ?";
         PreparedStatement stat = connect.prepareStatement(prep, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        stat.setInt(1, id);
         ResultSet result = stat.executeQuery();
         ResultSetMetaData rsmd = result.getMetaData();
         credColumn = new String[2];
@@ -294,5 +297,44 @@ public class servController {
        stmt.setInt(1, userid);
        stmt.execute();
        connect.commit();
+    }
+
+    public static void listAllPatient() throws SQLException{
+        String prep = "select * from person.person where roleID = 5";
+        PreparedStatement stat = connect.prepareStatement(prep, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet result = stat.executeQuery();
+        ResultSetMetaData rsmd = result.getMetaData();
+        connect.commit();
+        result.last();
+        int rowcount = result.getRow();
+        result.beforeFirst();
+        String[] colname= new String[17];
+        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+            colname[i-1] = rsmd.getColumnName(i);
+        }
+        Object[][] patient = new Object[rowcount][17];
+        int i = 0;
+        while(result.next()) {
+            for(int j = 0 ; j < 17 ; j++){
+                patient[i][j] = result.getObject(j+1);
+            }
+        i++;
+        }
+        AdminMenu.patient = patient;
+        AdminMenu.patientcol = colname;
+    }
+    public static void AddPatientFrame(int id, int nurse, int systolic, int diastolic, int heartRate, int bodytemp, int bodyHeight, int bodyWeight) throws SQLException{
+        String prep = "exec createHealthRecord @patientID = ?,@employeeID = ?,@systolic = ?,@diastolic = ?,@heartRate = ?,@bodyTemperature = ?,@bodyheight = ?,@bodyWeight = ?";
+        PreparedStatement stmt = connect.prepareStatement(prep, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        stmt.setInt(1, id);
+        stmt.setInt(2, nurse);
+        stmt.setInt(3, systolic);
+        stmt.setInt(4, diastolic);
+        stmt.setInt(5, heartRate);
+        stmt.setInt(6, bodytemp);
+        stmt.setInt(7, bodyHeight);
+        stmt.setInt(8, bodyWeight);
+        stmt.execute();
+        connect.commit();
     }
 }

@@ -131,9 +131,9 @@ class EditPatientFrame extends JFrame {
 
     c.gridx = 1;
     c.insets = new Insets(10, 5, 10, 10);
-    String[] doctorOptions = new String[] {"Andi", "Budi", "Rusdi"};
+    String[] doctorOptions = AdminMenu.doctors;
     JComboBox<String> doctorComboBox = new JComboBox<>(doctorOptions);
-    doctorComboBox.setSelectedItem(Doctor.toString());
+    doctorComboBox.setSelectedIndex(0);
     doctorComboBox.setFont(poppinsPlain);
     panel.add(doctorComboBox, c);
 
