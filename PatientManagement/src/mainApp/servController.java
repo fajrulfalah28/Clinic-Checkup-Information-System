@@ -337,4 +337,14 @@ public class servController {
         stmt.execute();
         connect.commit();
     }
+
+    public static void addAppointment(int id, int employee, String date) throws SQLException{
+        String prep = "exec createAppointment @patientID = ?,@employeeID = ?,@appointmentDate = ?";
+        PreparedStatement stmt = connect.prepareStatement(prep);
+        stmt.setInt(2, employee);
+        stmt.setString(3, date);
+        stmt.setInt(1, id);
+        stmt.execute();
+        connect.commit();
+    }
 }

@@ -2,6 +2,8 @@ package mainApp;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
+
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -174,12 +176,26 @@ private JComboBox doctorComboBox;
 
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String month = (String) monthComboBox.getSelectedItem();
+                int month =  monthComboBox.getSelectedIndex() + 1;
                 int day = (int) dayComboBox.getSelectedItem();
                 int year = (int) yearComboBox.getSelectedItem();
                 String time = (String) timeComboBox.getSelectedItem();
                 String patientName = patientNameField.getText();
-                String doctorName = "";
+                String date = day + "-" + month + "-" + year + " " + time;
+                ;
+                int id = (int)AdminMenu.patient[0][0];
+                for(int i = 0; i < AdminMenu.patient.length; i++){
+                        if (((String) AdminMenu.patient[i][3]).equalsIgnoreCase(patientName.split(" ")[0]) && ((String) AdminMenu.patient[i][4]).equalsIgnoreCase(patientName.split(" ")[1])){
+                                id = (int) AdminMenu.patient[i][0];
+                        }
+                }
+                String doctorName = AdminMenu.doctors[doctorComboBox.getSelectedIndex()];
+                try {
+                        servController.addAppointment(id, AdminMenu.servDoctorID[doctorComboBox.getSelectedIndex()], date);
+                } catch (SQLException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                }
                 // if (andiRadioButton.isSelected()) {
                 //     doctorName = "Andi";
                 // } else if (budiRadioButton.isSelected()) {
@@ -189,8 +205,8 @@ private JComboBox doctorComboBox;
                 // }
 
                 // Add the appointment data to the table model
-                Object[] rowData = {month + " " + day + ", " + year, time, patientName, doctorName};
-                tableModel.addRow(rowData);
+                // Object[] rowData = {month + " " + day + ", " + year, time, patientName, doctorName};
+                // tableModel.addRow(rowData);
 
                 // Clear the form fields
                 monthComboBox.setSelectedIndex(0);
