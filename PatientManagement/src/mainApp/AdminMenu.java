@@ -881,7 +881,26 @@ public static String[] patientcol;
       new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           // String idCardValue = IDCardField.getText();
-          int idCardNumber = Integer.parseInt(IDCardField.getText());
+          int idCardNumber = 0;
+          int zCode = 0;
+          int pNum = 0;
+          int fContactPhone = 0;
+          int sContactPhone = 0;
+          if (!IDCardField.getText().isBlank() && !zipCodeField.getText().isBlank() && !phoneNumField.getText().isBlank() && !fContactPhoneField.getText().isBlank() && !sContactPhoneField.getText().isBlank()){
+             idCardNumber = Integer.parseInt(IDCardField.getText());
+             zCode = Integer.valueOf(zipCodeField.getText());
+             pNum = Integer.valueOf(phoneNumField.getText());
+             fContactPhone = Integer.valueOf(fContactPhoneField.getText());
+             sContactPhone = Integer.valueOf(sContactPhoneField.getText());
+          } else {
+            JOptionPane.showMessageDialog(
+                    patientPanel,
+                    "Fill out the form!",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
+          }
+          
           String fPatientName = FNameField.getText();
           String lPatientName = LNameField.getText();
           String month = String.valueOf(monthComboBox.getSelectedIndex() + 1);
@@ -897,13 +916,13 @@ public static String[] patientcol;
           }
           String cAddress = cityAddressField.getText();
           String sAddress = streetAddressField.getText();
-          int zCode = Integer.valueOf(zipCodeField.getText());
+          
           String email = emailField.getText();
-          int pNum = Integer.valueOf(phoneNumField.getText());
+          
           String fContactName = fContactField.getText();
-          int fContactPhone = Integer.valueOf(fContactPhoneField.getText());
+          
           String sContactName = sContactField.getText();
-          int sContactPhone = Integer.valueOf(sContactPhoneField.getText());
+          
           String dateofbirth = month + "-"+ day +"-"+ year;
 
           
