@@ -192,6 +192,12 @@ private JComboBox doctorComboBox;
                 String doctorName = AdminMenu.doctors[doctorComboBox.getSelectedIndex()];
                 try {
                         servController.addAppointment(id, AdminMenu.servDoctorID[doctorComboBox.getSelectedIndex()], date);
+                        JOptionPane.showMessageDialog(
+                        panel,
+                    "Successfully Add Appointment",
+                    "Success",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
                 } catch (SQLException e1) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();
